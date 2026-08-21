@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Boolean Theorems Learning Platform | Digital Electronics</title>
+<meta name="description" content="Premium interactive platform to master Boolean Algebra theorems: proofs by truth table, an expression simplifier that shows every law used, an animated logic circuit visualizer, mini projects, flashcards, a formula sheet and a 50-question quiz.">
+<meta name="keywords" content="Boolean Algebra, Boolean Theorems, De Morgan, Absorption Law, Consensus Theorem, Logic Gates, Digital Electronics, Truth Table, Duality">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ============ THEME TOKENS ============ */
+:root{
+  --bg:#050a07; --panel: rgba(14,26,20,0.55); --panel-solid:#0c1712; --panel-2: rgba(20,36,28,0.55);
+  --line: rgba(18,242,150,0.18); --line-strong: rgba(18,242,150,0.4);
+  --text:#eafbf1; --muted:#93b6a4; --muted-dim:#5f7d6c;
+  --emerald:#12f296; --emerald-dim:#0c6b46; --emerald-soft: rgba(18,242,150,0.1);
+  --amber:#ffb157; --amber-dim:#6b4a26; --cyan:#63e0ff; --violet:#b98bff; --pink:#ff6b9d; --gold:#ffe066;
+  --radius:16px; --radius-sm:10px; --font:'Poppins',system-ui,sans-serif; --mono:'JetBrains Mono',monospace;
+}
+body.light{
+  --bg:#f3f8f5; --panel: rgba(255,255,255,0.65); --panel-solid:#ffffff; --panel-2: rgba(240,247,243,0.7);
+  --line: rgba(10,120,80,0.18); --line-strong: rgba(10,120,80,0.4);
+  --text:#0c1a13; --muted:#3f5c4d; --muted-dim:#6c8577;
+  --emerald:#0a9a63; --emerald-dim:#bdead4; --emerald-soft: rgba(10,154,99,0.08);
+  --amber:#b8650a; --amber-dim:#f4dcb8; --cyan:#0f7fa8; --violet:#7c4fd1; --pink:#c73866; --gold:#a67e00;
+}
+*{ box-sizing:border-box; }
+html{ scroll-behavior:smooth; }
+body{ margin:0; background:var(--bg); color:var(--text); font-family:var(--font); line-height:1.65; overflow-x:hidden; transition: background-color .3s ease, color .3s ease; }
+::selection{ background:var(--emerald-dim); color:var(--text); }
+a{ color:var(--emerald); }
+:focus-visible{ outline:2px solid var(--emerald); outline-offset:2px; border-radius:4px; }
+h1,h2,h3,h4{ font-family:var(--font); font-weight:700; letter-spacing:-0.01em; margin:0 0 .5em; }
+p{ color:var(--muted); margin:0 0 12px; }
+.mono{ font-family:var(--mono); }
+button{ font-family:var(--font); }
+.wrap{ max-width:1080px; margin:0 auto; padding:0 22px; }
+.wrap-narrow{ max-width:760px; margin:0 auto; padding:0 22px; }
+
+/* ============ ANIMATED BACKDROP ============ */
+.backdrop{ position:fixed; inset:0; z-index:0; pointer-events:none; overflow:hidden; }
+.grid-layer{ position:absolute; inset:-2px; background-image: linear-gradient(rgba(18,242,150,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(18,242,150,0.07) 1px, transparent 1px); background-size:46px 46px; animation: gridDrift 24s linear infinite; }
+body.light .grid-layer{ background-image: linear-gradient(rgba(10,120,80,0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(10,120,80,0.08) 1px, transparent 1px); }
+@keyframes gridDrift{ from{ background-position:0 0; } to{ background-position:46px 46px; } }
+.glow{ position:absolute; border-radius:50%; filter:blur(70px); opacity:.35; animation: floatBlob 18s ease-in-out infinite; }
+.glow.g1{ width:340px; height:340px; background:var(--emerald); top:-80px; left:-60px; }
+.glow.g2{ width:280px; height:280px; background:var(--cyan); bottom:10%; right:-60px; animation-delay:-6s; }
+.glow.g3{ width:260px; height:260px; background:var(--violet); top:40%; left:60%; animation-delay:-11s; }
+@keyframes floatBlob{ 0%,100%{ transform:translate(0,0) scale(1);} 50%{ transform:translate(20px,-30px) scale(1.12);} }
+.particle{ position:absolute; width:3px; height:3px; border-radius:50%; background:var(--emerald); box-shadow:0 0 8px 2px var(--emerald); animation: rise linear infinite; opacity:.6; }
+@keyframes rise{ from{ transform:translateY(0); opacity:0;} 10%{opacity:.7;} to{ transform:translateY(-100vh); opacity:0; } }
+@media (prefers-reduced-motion: reduce){ .grid-layer,.glow,.particle{ animation:none !important; } }
+
+/* ============ LOADER / PROGRESS / TOTOP ============ */
+#loader{ position:fixed; inset:0; z-index:999; background:var(--bg); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:16px; transition: opacity .5s ease, visibility .5s ease; }
+#loader.hide{ opacity:0; visibility:hidden; }
+.spin-logo{ width:56px; height:56px; border-radius:50%; border:3px solid var(--line); border-top-color:var(--emerald); animation: spin 0.9s linear infinite; }
+@keyframes spin{ to{ transform:rotate(360deg); } }
+.loader-text{ font-family:var(--mono); font-size:12.5px; letter-spacing:.15em; color:var(--muted); text-transform:uppercase; }
+#scrollProgress{ position:fixed; top:0; left:0; height:3px; width:0%; z-index:60; background:linear-gradient(90deg, var(--emerald), var(--cyan)); box-shadow:0 0 10px var(--emerald); transition:width .1s linear; }
+#toTop{ position:fixed; right:20px; bottom:22px; z-index:40; width:44px; height:44px; border-radius:50%; background:var(--panel); border:1px solid var(--line); color:var(--emerald); backdrop-filter:blur(10px); cursor:pointer; font-size:18px; opacity:0; pointer-events:none; transform:translateY(10px); transition:opacity .25s ease, transform .25s ease, box-shadow .2s ease; }
+#toTop.show{ opacity:1; pointer-events:auto; transform:none; }
+#toTop:hover{ box-shadow:0 0 16px var(--emerald-soft), 0 0 0 1px var(--emerald); }
+
+/* ============ APP BAR / DRAWER ============ */
+.app-bar{ position:sticky; top:0; z-index:30; display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 20px; background:var(--panel); backdrop-filter:blur(14px); border-bottom:1px solid var(--line); }
+.app-bar-left{ display:flex; align-items:center; gap:12px; min-width:0; }
+.icon-btn{ display:inline-flex; align-items:center; justify-content:center; width:38px; height:38px; border-radius:50%; border:1px solid var(--line); background:var(--panel-2); color:var(--text); cursor:pointer; font-size:16px; flex:none; transition: box-shadow .2s ease, border-color .2s ease; }
+.icon-btn:hover{ border-color:var(--emerald); box-shadow:0 0 12px var(--emerald-soft); }
+.brand{ font-weight:800; font-size:15px; display:flex; align-items:center; gap:8px; white-space:nowrap; }
+.brand .dot{ width:8px; height:8px; border-radius:50%; background:var(--emerald); box-shadow:0 0 10px 2px var(--emerald); }
+.brand span.accent{ color:var(--emerald); }
+.searchbox{ display:flex; align-items:center; gap:8px; background:var(--panel-2); border:1px solid var(--line); border-radius:999px; padding:7px 14px; flex:1; max-width:220px; }
+.searchbox input{ background:none; border:none; outline:none; color:var(--text); font-size:13px; width:100%; font-family:var(--font); }
+.searchbox input::placeholder{ color:var(--muted-dim); }
+.app-bar-right{ display:flex; align-items:center; gap:8px; }
+@media (max-width:780px){ .searchbox{ display:none; } }
+#drawerOverlay{ position:fixed; inset:0; background:rgba(0,0,0,.55); z-index:45; opacity:0; pointer-events:none; transition:opacity .25s ease; }
+#drawerOverlay.show{ opacity:1; pointer-events:auto; }
+#drawer{ position:fixed; top:0; left:0; bottom:0; width:280px; z-index:50; background:var(--panel-solid); border-right:1px solid var(--line); transform:translateX(-100%); transition:transform .3s ease; padding:20px 16px; overflow-y:auto; }
+#drawer.open{ transform:none; }
+.drawer-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; }
+.drawer-nav a{ display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:10px; color:var(--muted); text-decoration:none; font-size:13px; font-weight:500; cursor:pointer; border:1px solid transparent; }
+.drawer-nav a:hover{ background:var(--emerald-soft); color:var(--text); }
+.drawer-nav a.active{ background:var(--emerald-soft); border-color:var(--line-strong); color:var(--emerald); font-weight:600; }
+.drawer-nav .ic{ width:20px; text-align:center; }
+.drawer-foot{ margin-top:18px; padding-top:14px; border-top:1px solid var(--line); font-size:11px; color:var(--muted-dim); font-family:var(--mono); }
+#progressWidget{ margin-top:10px; }
+.progress-track{ height:6px; background:var(--panel-2); border-radius:4px; overflow:hidden; margin-top:6px; }
+.progress-fill{ height:100%; background:linear-gradient(90deg,var(--emerald),var(--cyan)); transition:width .4s ease; }
+
+/* ============ VIEWS / CARDS / BUTTONS ============ */
+main{ position:relative; z-index:1; padding-bottom:40px; min-height:70vh; }
+.view{ display:none; }
+.view.active{ display:block; animation:viewIn .4s ease; }
+@keyframes viewIn{ from{ opacity:0; transform:translateY(10px);} to{opacity:1; transform:none;} }
+.section-tag{ font-family:var(--mono); font-size:12px; color:var(--cyan); letter-spacing:.14em; text-transform:uppercase; margin-bottom:8px; }
+h2.h{ font-size:clamp(24px,4vw,32px); }
+.card{ border:1px solid var(--line); background:var(--panel); backdrop-filter:blur(12px); border-radius:var(--radius); padding:20px 22px; margin-bottom:16px; transition: box-shadow .25s ease, border-color .25s ease; }
+.card:hover{ border-color:var(--line-strong); box-shadow:0 0 24px -8px var(--emerald-soft); }
+.card h3{ font-size:16.5px; color:var(--text); }
+.btn{ font-family:var(--font); font-weight:600; font-size:13.5px; color:var(--bg); background:var(--emerald); border:none; border-radius:10px; padding:11px 20px; cursor:pointer; transition:box-shadow .2s ease, filter .2s ease, transform .15s ease; }
+.btn:hover{ box-shadow:0 0 20px var(--emerald-soft), 0 0 0 1px var(--emerald); filter:brightness(1.05); transform:translateY(-1px); }
+.btn.ghost{ background:transparent; color:var(--text); border:1px solid var(--line); }
+.btn.ghost:hover{ border-color:var(--emerald); color:var(--emerald); }
+.btn.small{ padding:8px 14px; font-size:12.5px; }
+.btn-row{ display:flex; flex-wrap:wrap; gap:10px; margin-top:14px; }
+.pill-list{ list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:8px; }
+.pill-list li{ padding:9px 12px; border-radius:8px; background:var(--panel-2); border:1px solid var(--line); font-size:13.5px; color:var(--muted); }
+.reveal{ opacity:0; transform:translateY(14px); transition:opacity .5s ease, transform .5s ease; }
+.reveal.in{ opacity:1; transform:none; }
+.two-col{ display:grid; grid-template-columns:1fr; gap:14px; }
+@media (min-width:640px){ .two-col{ grid-template-columns:1fr 1fr; } }
+.badge{ display:inline-block; font-family:var(--mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.06em; color:var(--emerald); border:1px solid var(--line-strong); padding:3px 8px; border-radius:6px; margin-left:8px; }
+
+/* ============ HOME ============ */
+.home-hero{ padding:56px 0 14px; text-align:center; position:relative; }
+.eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.16em; text-transform:uppercase; color:var(--emerald); display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:16px; }
+.eyebrow::before,.eyebrow::after{ content:""; width:22px; height:1px; background:var(--emerald); }
+h1.title{ font-size:clamp(28px,6.5vw,46px); line-height:1.1; }
+h1.title .grad{ background:linear-gradient(90deg,var(--emerald),var(--cyan)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.home-hero .lede{ max-width:56ch; margin:12px auto 0; }
+.start-btn{ margin:28px 6px 6px; display:inline-flex; align-items:center; gap:10px; font-weight:700; font-size:15px; padding:14px 26px; border-radius:999px; }
+.gate-float{ position:absolute; font-family:var(--mono); font-size:12px; font-weight:600; color:var(--emerald); background:var(--panel); border:1px solid var(--line); border-radius:10px; padding:8px 12px; opacity:.7; animation:gateFloat 7s ease-in-out infinite; backdrop-filter:blur(6px); }
+@keyframes gateFloat{ 0%,100%{ transform:translateY(0) rotate(0deg);} 50%{ transform:translateY(-16px) rotate(3deg);} }
+.gf1{ top:6%; left:4%; } .gf2{ top:18%; right:6%; animation-delay:-2s; color:var(--cyan); }
+.gf3{ bottom:12%; left:9%; animation-delay:-4s; color:var(--violet); } .gf4{ bottom:4%; right:10%; animation-delay:-1.5s; color:var(--amber); }
+@media (max-width:640px){ .gate-float{ display:none; } }
+.counters{ display:grid; grid-template-columns:repeat(2,1fr); gap:14px; margin:36px 0; }
+@media (min-width:600px){ .counters{ grid-template-columns:repeat(4,1fr); } }
+.counter-card{ border:1px solid var(--line); background:var(--panel); border-radius:var(--radius-sm); padding:18px 10px; text-align:center; }
+.counter-num{ font-family:var(--mono); font-size:26px; font-weight:700; color:var(--emerald); }
+.counter-label{ font-size:11.5px; color:var(--muted); margin-top:4px; }
+.nav-cards{ display:grid; grid-template-columns:1fr; gap:14px; padding:14px 0 20px; }
+@media (min-width:640px){ .nav-cards{ grid-template-columns:1fr 1fr; } }
+.nav-card{ text-align:left; display:flex; align-items:flex-start; gap:14px; width:100%; border:1px solid var(--line); background:linear-gradient(180deg,var(--panel),var(--panel-2)); border-radius:var(--radius); padding:18px; cursor:pointer; color:var(--text); backdrop-filter:blur(10px); }
+.nav-card:hover{ border-color:var(--emerald); box-shadow:0 0 22px -6px var(--emerald-soft); transform:translateY(-2px); }
+.nav-card .icon{ width:42px; height:42px; flex:none; display:flex; align-items:center; justify-content:center; border-radius:10px; font-size:19px; background:var(--emerald-soft); border:1px solid var(--line-strong); }
+.nav-card h3{ font-size:15px; margin-bottom:3px; }
+.nav-card p{ margin:0; font-size:12.5px; }
+
+/* ============ THEOREMS ============ */
+.theorem-search{ display:flex; gap:8px; margin-bottom:18px; }
+.theorem-card{ border:1px solid var(--line); background:var(--panel); border-radius:var(--radius); padding:20px; margin-bottom:18px; }
+.theorem-card h3{ font-size:17px; }
+.formula-chip{ display:inline-block; font-family:var(--mono); font-size:14px; color:var(--emerald); background:var(--emerald-soft); border:1px solid var(--emerald-dim); border-radius:8px; padding:6px 12px; margin:4px 6px 4px 0; }
+.proof-table{ width:100%; border-collapse:collapse; font-family:var(--mono); font-size:12.5px; margin:10px 0; }
+.proof-table th,.proof-table td{ border:1px solid var(--line); padding:6px 8px; text-align:center; }
+.proof-table th{ background:var(--panel-2); color:var(--cyan); font-size:11px; text-transform:uppercase; }
+.proof-table td.match{ color:var(--emerald); font-weight:700; }
+details.acc{ border:1px solid var(--line); border-radius:8px; padding:10px 12px; background:var(--panel-2); margin-top:10px; }
+details.acc summary{ cursor:pointer; font-family:var(--mono); font-size:12px; color:var(--cyan); text-transform:uppercase; letter-spacing:.05em; }
+details.acc[open] summary{ margin-bottom:10px; }
+
+/* ============ TRUTH TABLE / STEP CARDS ============ */
+.builder{ border:1px solid var(--line); border-radius:var(--radius); background:linear-gradient(180deg,var(--panel),var(--panel-2)); overflow:hidden; margin-top:6px; backdrop-filter:blur(10px); padding:18px; }
+table.truth{ width:100%; border-collapse:collapse; font-family:var(--mono); font-size:13px; }
+table.truth th{ text-align:center; color:var(--muted); font-weight:500; padding:6px 4px; border-bottom:1px solid var(--line); font-size:11.5px; }
+table.truth td{ text-align:center; padding:7px 4px; color:var(--muted); }
+table.truth tbody tr{ border-bottom:1px solid var(--line); }
+table.truth tbody tr td.out1{ color:var(--emerald); font-weight:700; }
+table.truth tbody tr td.out0{ color:var(--amber); }
+textarea.expr-input, input.expr-input{ width:100%; font-family:var(--mono); font-size:14px; color:var(--text); background:var(--panel-2); border:1px solid var(--line); border-radius:10px; padding:12px 14px; outline:none; }
+textarea.expr-input:focus, input.expr-input:focus{ border-color:var(--emerald); }
+.field-label{ font-family:var(--mono); font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin-bottom:6px; display:block; }
+.err-msg{ color:var(--pink); font-size:13px; margin-top:8px; }
+.step-card{ border:1px solid var(--line); background:var(--panel); border-radius:var(--radius-sm); padding:12px 15px; margin-bottom:8px; opacity:0; animation:stepIn .5s ease forwards; }
+@keyframes stepIn{ from{opacity:0; transform:translateX(-10px);} to{opacity:1; transform:none;} }
+.step-card .tag{ font-family:var(--mono); font-size:11px; color:var(--emerald); text-transform:uppercase; letter-spacing:.08em; margin-bottom:4px; }
+.step-card.final{ border-color:var(--emerald); background:var(--emerald-soft); }
+
+/* ============ CIRCUIT VISUALIZER ============ */
+#circuitSvgWrap{ overflow:auto; border:1px solid var(--line); border-radius:var(--radius-sm); background:
+  radial-gradient(circle at 15% 10%, var(--emerald-soft), transparent 45%),
+  radial-gradient(circle at 85% 90%, rgba(99,224,255,0.08), transparent 45%),
+  var(--panel-solid);
+  padding:14px; position:relative; }
+#circuitSvgWrap svg{ display:block; margin:0 auto; }
+.circ-board-grid{ stroke:var(--line); stroke-width:1; opacity:.5; }
+.gate-body{ fill:var(--panel-2); stroke:var(--line-strong); stroke-width:1.8; transition:stroke .25s ease, filter .25s ease; }
+.gate-body.energized{ stroke:var(--emerald); filter:drop-shadow(0 0 5px var(--emerald-soft)); }
+.gate-bubble{ fill:var(--panel-solid); stroke:var(--line-strong); stroke-width:1.8; }
+.gate-bubble.energized{ stroke:var(--emerald); }
+.gate-label{ font-family:var(--mono); font-size:10.5px; font-weight:600; fill:var(--text); text-anchor:middle; dominant-baseline:middle; letter-spacing:.03em; pointer-events:none; }
+.gate-pin{ stroke:var(--muted-dim); stroke-width:2; }
+.gate-pin.on{ stroke:var(--emerald); }
+.wire{ stroke:var(--muted-dim); stroke-width:2.25; fill:none; transition:stroke .25s ease, filter .25s ease; stroke-linecap:round; }
+.wire.on{ stroke:var(--emerald); filter:drop-shadow(0 0 3px var(--emerald)); stroke-dasharray:7 6; animation:signalFlow .6s linear infinite; }
+@keyframes signalFlow{ to{ stroke-dashoffset:-26; } }
+@media (prefers-reduced-motion: reduce){ .wire.on{ animation:none; } }
+.io-pin-dot{ transition:fill .25s ease, filter .25s ease; }
+.io-pin-dot.on{ fill:var(--emerald); filter:drop-shadow(0 0 4px var(--emerald)); }
+.io-pin-dot.off{ fill:var(--muted-dim); }
+.switch-track{ fill:var(--panel-2); stroke:var(--line); cursor:pointer; transition:stroke .2s ease, fill .2s ease; }
+.switch-track:hover{ stroke:var(--emerald); }
+.switch-track.on{ stroke:var(--emerald); fill:var(--emerald-soft); }
+.switch-knob{ fill:var(--muted-dim); transition:cx .2s ease, fill .2s ease; pointer-events:none; }
+.switch-knob.on{ fill:var(--emerald); filter:drop-shadow(0 0 5px var(--emerald)); }
+.input-var-label{ font-family:var(--mono); font-size:12.5px; font-weight:700; fill:var(--text); text-anchor:middle; pointer-events:none; }
+.input-val-label{ font-family:var(--mono); font-size:9.5px; text-anchor:middle; pointer-events:none; }
+.const-pin{ fill:var(--panel-2); stroke:var(--line); }
+.led-glass{ fill:var(--panel-2); stroke:var(--line-strong); stroke-width:1.5; }
+.led-on{ fill:var(--emerald); filter:drop-shadow(0 0 10px var(--emerald)) drop-shadow(0 0 22px var(--emerald-soft)); }
+.led-off{ fill:var(--muted-dim); opacity:.55; }
+.out-label{ font-family:var(--mono); font-size:11px; font-weight:700; text-anchor:middle; fill:var(--text); }
+.circ-legend{ display:flex; flex-wrap:wrap; gap:8px 16px; margin-top:12px; padding:10px 14px; border:1px solid var(--line); border-radius:var(--radius-sm); background:var(--panel-2); font-family:var(--mono); font-size:11px; color:var(--muted); }
+.circ-legend span{ display:inline-flex; align-items:center; gap:6px; }
+.circ-legend i{ display:inline-block; width:10px; height:10px; border-radius:3px; border:1.5px solid var(--emerald); background:var(--emerald-soft); }
+
+/* ============ INTERACTIVE PROOF SELECTOR ============ */
+.proof-selector{ border:1px solid var(--line-strong); background:linear-gradient(160deg, var(--panel), var(--panel-2)); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); border-radius:20px; padding:24px; margin-bottom:16px; position:relative; overflow:hidden; }
+.proof-selector::before{ content:""; position:absolute; top:-40%; right:-15%; width:280px; height:280px; border-radius:50%; background:radial-gradient(circle, var(--emerald-soft), transparent 70%); pointer-events:none; }
+.proof-selector-head{ display:flex; align-items:center; gap:10px; margin-bottom:4px; position:relative; z-index:1; }
+.proof-selector-head .picon{ width:38px; height:38px; border-radius:12px; display:flex; align-items:center; justify-content:center; background:var(--emerald-soft); border:1px solid var(--line-strong); font-size:18px; flex:none; }
+.theorem-tabs{ display:flex; gap:8px; overflow-x:auto; padding:16px 2px 10px; margin-bottom:6px; scrollbar-width:thin; position:relative; z-index:1; }
+.theorem-tabs::-webkit-scrollbar{ height:6px; }
+.theorem-tabs::-webkit-scrollbar-thumb{ background:var(--line-strong); border-radius:4px; }
+.theorem-tab{ flex:none; display:flex; align-items:center; gap:8px; font-family:var(--font); font-size:12.5px; font-weight:600; color:var(--muted); background:var(--panel-2); border:1px solid var(--line); border-radius:999px; padding:9px 16px 9px 12px; cursor:pointer; transition:border-color .2s ease, color .2s ease, box-shadow .2s ease, transform .15s ease, background .2s ease; white-space:nowrap; }
+.theorem-tab .t-ic{ width:22px; height:22px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:var(--panel-solid); font-size:12px; flex:none; }
+.theorem-tab:hover{ border-color:var(--line-strong); color:var(--text); transform:translateY(-1px); }
+.theorem-tab.active{ background:linear-gradient(135deg, var(--emerald), var(--cyan)); color:var(--bg); border-color:transparent; box-shadow:0 6px 18px -6px var(--emerald-soft); }
+.theorem-tab.active .t-ic{ background:rgba(0,0,0,.15); }
+.proof-stage{ position:relative; z-index:1; border:1px solid var(--line); border-radius:16px; background:var(--panel-solid); padding:20px; min-height:120px; }
+.proof-progress-row{ display:flex; align-items:center; gap:6px; margin-bottom:16px; }
+.proof-dot{ flex:1; height:5px; border-radius:4px; background:var(--panel-2); border:1px solid var(--line); cursor:pointer; overflow:hidden; transition:border-color .2s ease; }
+.proof-dot .fill{ height:100%; width:0%; background:linear-gradient(90deg,var(--emerald),var(--cyan)); transition:width .3s ease; }
+.proof-dot.done .fill{ width:100%; }
+.proof-dot.current{ border-color:var(--emerald); }
+.proof-card-slide{ animation:proofSlideIn .4s ease; }
+@keyframes proofSlideIn{ from{ opacity:0; transform:translateX(14px);} to{ opacity:1; transform:none; } }
+.proof-step-tag{ display:inline-flex; align-items:center; gap:7px; font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--emerald); background:var(--emerald-soft); border:1px solid var(--line-strong); border-radius:999px; padding:5px 12px; margin-bottom:14px; }
+.proof-card-body{ font-size:14.5px; color:var(--text); }
+.proof-card-body .mono{ font-size:16px; color:var(--emerald); }
+.proof-law-highlight{ display:inline-block; background:linear-gradient(135deg, var(--emerald-soft), rgba(99,224,255,0.12)); border:1px solid var(--line-strong); border-radius:10px; padding:10px 14px; font-family:var(--mono); font-size:13.5px; color:var(--text); margin:10px 0; }
+.proof-final-banner{ display:flex; align-items:center; gap:10px; border:1px solid var(--emerald-dim); background:var(--emerald-soft); border-radius:12px; padding:12px 14px; color:var(--emerald); font-weight:600; font-size:13.5px; margin-top:4px; }
+.proof-controls{ display:flex; align-items:center; justify-content:space-between; gap:10px; margin-top:18px; flex-wrap:wrap; position:relative; z-index:1; }
+.proof-nav-btns{ display:flex; gap:8px; }
+.proof-nav-btn{ display:inline-flex; align-items:center; gap:6px; font-family:var(--font); font-weight:600; font-size:12.5px; color:var(--text); background:var(--panel-2); border:1px solid var(--line); border-radius:10px; padding:9px 15px; cursor:pointer; transition:border-color .2s ease, box-shadow .2s ease, opacity .2s ease; }
+.proof-nav-btn:hover:not(:disabled){ border-color:var(--emerald); box-shadow:0 0 14px -4px var(--emerald-soft); }
+.proof-nav-btn:disabled{ opacity:.4; cursor:not-allowed; }
+.proof-nav-btn.play.playing{ background:linear-gradient(135deg, var(--emerald), var(--cyan)); color:var(--bg); border-color:transparent; }
+.proof-step-count{ font-family:var(--mono); font-size:11.5px; color:var(--muted-dim); }
+
+/* ============ TABS ============ */
+.tab-row{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:18px; }
+.tab-btn{ font-family:var(--mono); font-size:12.5px; padding:9px 14px; border-radius:8px; border:1px solid var(--line); background:var(--panel-2); color:var(--muted); cursor:pointer; }
+.tab-btn.active{ background:var(--emerald); color:var(--bg); border-color:var(--emerald); font-weight:600; }
+.tab-panel{ display:none; } .tab-panel.active{ display:block; }
+
+/* ============ FLASHCARDS ============ */
+.flash-wrap{ display:flex; justify-content:center; margin:20px 0; }
+.flash-card{ width:280px; height:180px; perspective:1200px; cursor:pointer; }
+.flash-inner{ position:relative; width:100%; height:100%; transition:transform .5s; transform-style:preserve-3d; }
+.flash-card.flipped .flash-inner{ transform:rotateY(180deg); }
+.flash-face{ position:absolute; inset:0; backface-visibility:hidden; border-radius:var(--radius); border:1px solid var(--line-strong); background:linear-gradient(180deg,var(--panel),var(--panel-2)); display:flex; align-items:center; justify-content:center; text-align:center; padding:18px; font-weight:600; color:var(--text); backdrop-filter:blur(10px); }
+.flash-face.back{ transform:rotateY(180deg); color:var(--emerald); font-family:var(--mono); font-size:13.5px; }
+.flash-nav{ display:flex; justify-content:center; gap:10px; margin-top:14px; }
+
+/* ============ QUIZ ============ */
+.quiz-shell{ border:1px solid var(--line); border-radius:var(--radius); background:var(--panel); overflow:hidden; margin-top:6px; backdrop-filter:blur(10px); }
+.quiz-head{ display:flex; align-items:center; justify-content:space-between; padding:12px 16px; border-bottom:1px solid var(--line); gap:10px; flex-wrap:wrap; }
+.score{ font-family:var(--mono); font-size:12.5px; color:var(--muted); }
+.score span{ color:var(--emerald); }
+.quiz-body{ padding:20px 18px; }
+.quiz-prompt{ font-size:15px; color:var(--text); margin-bottom:14px; }
+.options{ display:grid; gap:9px; }
+.opt{ text-align:left; font-size:13.5px; color:var(--text); background:var(--panel-2); border:1px solid var(--line); border-radius:8px; padding:11px 13px; cursor:pointer; width:100%; }
+.opt:hover:not(:disabled){ border-color:var(--emerald); }
+.opt.correct{ border-color:var(--emerald); background:var(--emerald-soft); color:var(--emerald); }
+.opt.wrong{ border-color:var(--pink); background:rgba(255,107,157,0.08); color:var(--pink); }
+.opt:disabled{ cursor:default; }
+.feedback{ margin-top:12px; font-size:13px; color:var(--muted); min-height:20px; }
+.feedback.good{ color:var(--emerald); } .feedback.bad{ color:var(--pink); }
+.quiz-actions{ margin-top:16px; display:flex; gap:10px; flex-wrap:wrap; }
+.quiz-progress-bar{ height:5px; border-radius:4px; background:var(--panel-2); overflow:hidden; margin-bottom:14px; }
+.quiz-progress-fill{ height:100%; background:linear-gradient(90deg,var(--emerald),var(--cyan)); transition:width .3s ease; }
+.certificate{ border:3px solid var(--emerald); border-radius:16px; padding:40px 24px; text-align:center; background:var(--panel-solid); }
+.certificate h2{ font-size:26px; color:var(--emerald); }
+
+/* ============ TOASTS ============ */
+#toastHost{ position:fixed; bottom:22px; left:50%; transform:translateX(-50%); z-index:80; display:flex; flex-direction:column; gap:8px; align-items:center; width:100%; pointer-events:none; }
+.toast{ background:var(--panel-solid); border:1px solid var(--line-strong); color:var(--text); font-size:13px; padding:10px 18px; border-radius:999px; box-shadow:0 8px 24px -8px rgba(0,0,0,.5); opacity:0; transform:translateY(10px); transition:opacity .25s ease, transform .25s ease; }
+.toast.show{ opacity:1; transform:none; }
+
+/* ============ SITE FOOTER ============ */
+footer.site-footer{ position:relative; z-index:1; margin-top:36px; padding:36px 22px 34px; text-align:center; color:var(--muted-dim); font-size:12.5px; }
+.footer-divider{ height:1px; width:min(640px, 86%); margin:0 auto 26px; background:linear-gradient(90deg, transparent, var(--emerald), var(--cyan), var(--emerald), transparent); box-shadow:0 0 10px var(--emerald-soft), 0 0 18px var(--emerald-soft); opacity:.85; }
+.footer-copyright{ display:inline-block; font-family:var(--mono); font-size:12.5px; letter-spacing:.05em; color:var(--muted); padding:12px 26px; border:1px solid var(--line); border-radius:999px; background:linear-gradient(160deg, var(--panel), var(--panel-2)); backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px); box-shadow:0 4px 20px -8px var(--emerald-soft); }
+@media (max-width:480px){ .footer-copyright{ font-size:11px; padding:10px 16px; letter-spacing:.03em; white-space:normal; } .footer-divider{ width:82%; } }
+
+@media print{
+  .app-bar, #drawer, #drawerOverlay, #scrollProgress, #toTop, #toastHost, #loader, .backdrop, .btn, .btn-row, .nav-cards, .start-btn, .tab-row, footer.site-footer{ display:none !important; }
+  body{ background:#fff; color:#000; }
+  .view{ display:none !important; }
+  .view.print-target{ display:block !important; }
+  .card{ border:1px solid #999; break-inside:avoid; }
+}
+@media (prefers-reduced-motion: reduce){ *{ animation:none !important; transition:none !important; } }
+</style>
+</head>
+<body>
+
+<div class="backdrop" aria-hidden="true"><div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div><div id="particleField"></div></div>
+<div id="loader"><div class="spin-logo"></div><div class="loader-text">Loading Boolean Theorems…</div></div>
+<div id="scrollProgress"></div>
+<div id="toastHost" aria-live="polite"></div>
+
+<div id="drawerOverlay"></div>
+<nav id="drawer" aria-label="Site navigation">
+  <div class="drawer-head"><div class="brand"><span class="dot"></span>Bool<span class="accent">Theorems</span></div><button class="icon-btn" id="drawerClose" aria-label="Close menu">✕</button></div>
+  <div class="drawer-nav" id="drawerNav">
+    <a data-target="home"><span class="ic">🏠</span>Home</a>
+    <a data-target="about"><span class="ic">ℹ️</span>About</a>
+    <a data-target="intro"><span class="ic">📘</span>Introduction</a>
+    <a data-target="theorems"><span class="ic">Σ</span>Boolean Theorems</a>
+    <a data-target="truthtable"><span class="ic">📊</span>Truth Table Generator</a>
+    <a data-target="simplifier"><span class="ic">🧮</span>Expression Simplifier</a>
+    <a data-target="circuit"><span class="ic">🔌</span>Circuit Visualizer</a>
+    <a data-target="projects"><span class="ic">🛠️</span>Mini Projects</a>
+    <a data-target="quiz"><span class="ic">📝</span>Quiz</a>
+    <a data-target="flashcards"><span class="ic">🗂️</span>Flash Cards</a>
+    <a data-target="formulasheet"><span class="ic">📄</span>Formula Sheet</a>
+    <a data-target="applications"><span class="ic">🌐</span>Applications</a>
+    <a data-target="faq"><span class="ic">❓</span>FAQ</a>
+    <a data-target="glossary"><span class="ic">🔤</span>Glossary</a>
+  </div>
+  <div id="progressWidget"><div class="drawer-foot" style="border-top:none; margin-top:6px; padding-top:0;">Progress: <span id="progressText">0/14</span> lessons visited</div><div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%;"></div></div></div>
+  <div class="drawer-foot">Shortcuts: 1–9 jump pages · D theme · / search · Esc close</div>
+</nav>
+
+<div class="app-bar">
+  <div class="app-bar-left"><button class="icon-btn" id="menuBtn" aria-label="Open menu">☰</button><div class="brand"><span class="dot"></span>Bool<span class="accent">Theorems</span></div></div>
+  <div class="searchbox"><span style="color:var(--muted-dim); font-size:13px;">🔍</span><input id="searchInput" placeholder="Search pages or theorems…" aria-label="Search"></div>
+  <div class="app-bar-right"><button class="icon-btn" id="themeToggle" aria-label="Toggle dark mode" aria-pressed="true">🌙</button></div>
+</div>
+
+<main id="app">
+
+<!-- ================= HOME ================= -->
+<section class="view active" id="view-home">
+  <div class="wrap">
+    <div class="home-hero">
+      <span class="gate-float gf1">AND</span><span class="gate-float gf2">OR</span><span class="gate-float gf3">NOT</span><span class="gate-float gf4">XOR</span>
+      <div class="eyebrow">Digital Electronics · Boolean Algebra</div>
+      <h1 class="title">Boolean Theorems <span class="grad">Learning Platform</span></h1>
+      <p class="lede">Master Boolean Algebra through interactive explanations, truth tables, proofs, and real-world logic circuit applications.</p>
+      <button class="btn start-btn" id="startBtn">🚀 Start Learning</button>
+      <button class="btn ghost start-btn" data-target="theorems">📚 Explore Theorems</button>
+    </div>
+    <div class="counters">
+      <div class="counter-card"><div class="counter-num" data-count="12">0</div><div class="counter-label">Theorems Proven</div></div>
+      <div class="counter-card"><div class="counter-num" data-count="50">0</div><div class="counter-label">Quiz Questions</div></div>
+      <div class="counter-card"><div class="counter-num" data-count="5">0</div><div class="counter-label">Mini Projects</div></div>
+      <div class="counter-card"><div class="counter-num" data-count="9">0</div><div class="counter-label">Interactive Tools</div></div>
+    </div>
+    <div class="nav-cards">
+      <button class="nav-card" data-target="intro"><span class="icon">📘</span><span><h3>Introduction</h3><p>Variables, literals, gates and expressions with simple examples.</p></span></button>
+      <button class="nav-card" data-target="theorems"><span class="icon">Σ</span><span><h3>Boolean Theorems</h3><p>Every law with formula, proof-by-truth-table, circuit meaning &amp; practice.</p></span></button>
+      <button class="nav-card" data-target="truthtable"><span class="icon">📊</span><span><h3>Truth Table Generator</h3><p>Type any expression, get the evaluated table instantly.</p></span></button>
+      <button class="nav-card" data-target="simplifier"><span class="icon">🧮</span><span><h3>Expression Simplifier</h3><p>Watch each Boolean law fire, step by step, to a simpler form.</p></span></button>
+      <button class="nav-card" data-target="circuit"><span class="icon">🔌</span><span><h3>Circuit Visualizer</h3><p>An animated AND/OR/NOT gate diagram you can toggle live.</p></span></button>
+      <button class="nav-card" data-target="projects"><span class="icon">🛠️</span><span><h3>Mini Projects</h3><p>Traffic lights, alarms, elevators — real logic, real expressions.</p></span></button>
+      <button class="nav-card" data-target="quiz"><span class="icon">📝</span><span><h3>Quiz</h3><p>50 questions, instant feedback, and a certificate at 80%+.</p></span></button>
+      <button class="nav-card" data-target="flashcards"><span class="icon">🗂️</span><span><h3>Flash Cards</h3><p>Flip through every law and key term.</p></span></button>
+    </div>
+  </div>
+</section>
+
+<!-- ================= ABOUT ================= -->
+<section class="view" id="view-about">
+  <div class="wrap-narrow">
+    <div class="section-tag">About</div>
+    <h2 class="h">What is Boolean Algebra?</h2>
+    <p class="reveal">Boolean Algebra is the branch of mathematics dealing with variables that hold only two values — 0 and 1 (false/true) — combined with AND, OR and NOT. It's the mathematical foundation every digital circuit is built on.</p>
+    <div class="card reveal"><h3>Importance of Boolean Theorems</h3><p>Theorems like Absorption and De Morgan's let engineers rewrite a logic expression into an equivalent but simpler or more convenient form — fewer gates, less cost, less delay — without changing what the circuit does.</p></div>
+    <div class="card reveal"><h3>Applications in Digital Electronics</h3><p>Every combinational and sequential circuit — adders, multiplexers, counters, memory — is designed and verified using Boolean algebra.</p></div>
+    <div class="card reveal"><h3>Importance in Logic Circuit Design</h3><p>Simplifying an expression before building hardware directly reduces the number of gates, power consumption, and propagation delay of the final circuit.</p></div>
+    <div class="card reveal"><h3>Importance in Computer Engineering</h3><p>CPU arithmetic units, control logic, cache systems and compilers' boolean-condition optimizations all rely on the same laws taught here.</p></div>
+  </div>
+</section>
+
+<!-- ================= INTRODUCTION ================= -->
+<section class="view" id="view-intro">
+  <div class="wrap-narrow">
+    <div class="section-tag">Introduction</div>
+    <h2 class="h">The building blocks</h2>
+    <div class="card reveal"><h3>Boolean Variables &amp; Binary Logic</h3><p>A Boolean variable (A, B, C…) can hold exactly one of two values: 0 or 1. Binary logic is the system built entirely from these two values.</p></div>
+    <div class="card reveal"><h3>Logic Gates</h3><p>A gate is a physical/electronic device implementing a Boolean operation. <span class="mono">AND</span> outputs 1 only if all inputs are 1. <span class="mono">OR</span> outputs 1 if any input is 1. <span class="mono">NOT</span> flips its single input.</p></div>
+    <div class="card reveal"><h3>Expressions &amp; Literals</h3><p>An expression combines variables with operators, e.g. <span class="mono">A·B + C'</span>. A literal is a variable or its complement appearing in an expression — <span class="mono">A</span> and <span class="mono">A'</span> are both literals of A.</p></div>
+    <div class="card reveal"><h3>Complement</h3><p>The complement of A, written A', is 1 when A is 0 and 0 when A is 1.</p></div>
+    <div class="two-col reveal">
+      <div class="card"><h3>AND — example</h3><p><span class="mono">A=1, B=0 → A·B = 0</span>. Both must be 1 for the output to be 1.</p></div>
+      <div class="card"><h3>OR — example</h3><p><span class="mono">A=1, B=0 → A+B = 1</span>. Only one needs to be 1.</p></div>
+    </div>
+    <div class="card reveal"><h3>NOT — example</h3><p><span class="mono">A=1 → A' = 0</span>.</p></div>
+  </div>
+</section>
+
+<!-- ================= THEOREMS ================= -->
+<section class="view" id="view-theorems">
+  <div class="wrap-narrow">
+    <div class="section-tag">Boolean Theorems</div>
+    <h2 class="h">Every theorem, proven live</h2>
+    <p>Each proof below is generated by evaluating both sides of the identity over every possible input — not hardcoded. Use the search box or the Interactive Proof selector to jump straight to a theorem.</p>
+    <div class="theorem-search"><input class="expr-input" id="theoremSearch" placeholder="Search theorems (e.g. 'absorption', 'A+A'')…"></div>
+
+    <div class="proof-selector">
+      <div class="proof-selector-head"><span class="picon">🧠</span><h3 style="margin:0;">Interactive Proof Selector</h3></div>
+      <p style="margin:6px 0 0; font-size:13px;">Pick a theorem below, then step through its proof — or hit Auto Play and watch it unfold.</p>
+      <div class="theorem-tabs" id="proofTabs" role="tablist"></div>
+      <div class="proof-stage">
+        <div class="proof-progress-row" id="proofProgressRow"></div>
+        <div id="proofSelectorOut"></div>
+      </div>
+      <div class="proof-controls">
+        <div class="proof-nav-btns">
+          <button class="proof-nav-btn" id="proofPrevBtn">← Previous</button>
+          <button class="proof-nav-btn" id="proofNextBtn">Next →</button>
+          <button class="proof-nav-btn play" id="proofPlayBtn">▶ Auto Play</button>
+        </div>
+        <div class="proof-step-count" id="proofStepCount"></div>
+      </div>
+    </div>
+
+    <div id="theoremsHost"></div>
+
+    <div class="card reveal" id="dualityCard"><h3>Duality Principle</h3><p>Every Boolean identity has a <strong style="color:var(--text)">dual</strong>: swap every <span class="mono">+</span> with <span class="mono">·</span>, and every <span class="mono">0</span> with <span class="mono">1</span> (variables stay the same). The dual of a true identity is also true.</p>
+      <table class="proof-table"><tr><th>Identity</th><th>Dual</th></tr>
+        <tr><td>A + 0 = A</td><td>A · 1 = A</td></tr>
+        <tr><td>A + A' = 1</td><td>A · A' = 0</td></tr>
+        <tr><td>A + AB = A</td><td>A(A+B) = A</td></tr>
+        <tr><td>(A+B)' = A'B'</td><td>(AB)' = A'+B'</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= TRUTH TABLE ================= -->
+<section class="view" id="view-truthtable">
+  <div class="wrap-narrow">
+    <div class="section-tag">Truth Table Generator</div>
+    <h2 class="h">Type an expression, get the table</h2>
+    <div class="builder">
+      <label class="field-label">Boolean expression (A–D, + OR, . AND, ' NOT, parentheses)</label>
+      <input class="expr-input" id="ttExprInput" value="A.B + A'.C">
+      <div class="btn-row"><button class="btn" id="ttGenBtn">Generate</button><button class="btn ghost" id="ttCopyBtn">📋 Copy table</button></div>
+      <div id="ttOut" style="margin-top:16px;"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= SIMPLIFIER ================= -->
+<section class="view" id="view-simplifier">
+  <div class="wrap-narrow">
+    <div class="section-tag">Expression Simplifier</div>
+    <h2 class="h">Simplify step by step, every law named</h2>
+    <p>Covers Identity, Null, Idempotent, Complement, Absorption, Involution and De Morgan's laws via real pattern matching — not a lookup table. (Full K-map–style minimization is a separate, bigger tool and isn't attempted here.)</p>
+    <div class="builder">
+      <label class="field-label">Boolean expression</label>
+      <input class="expr-input" id="simpExprInput" value="A.B + A">
+      <div class="btn-row"><button class="btn" id="simpRunBtn">Simplify</button><button class="btn ghost" id="simpResetBtn">Reset</button></div>
+      <div id="simpOut" style="margin-top:16px;"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= CIRCUIT ================= -->
+<section class="view" id="view-circuit">
+  <div class="wrap-narrow">
+    <div class="section-tag">Logic Circuit Visualizer</div>
+    <h2 class="h">See the gates, toggle the inputs</h2>
+    <p>Click a switch to flip an input — every gate and wire updates live, and the LED shows the final output.</p>
+    <div class="builder">
+      <label class="field-label">Boolean expression</label>
+      <input class="expr-input" id="circExprInput" value="A.B + A'.C">
+      <div class="btn-row"><button class="btn" id="circGenBtn">Generate Circuit</button></div>
+      <div id="circuitSvgWrap" style="margin-top:16px;"></div>
+      <div id="circuitReadout" class="mono" style="margin-top:10px; color:var(--emerald);"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PROJECTS ================= -->
+<section class="view" id="view-projects">
+  <div class="wrap-narrow">
+    <div class="section-tag">Mini Projects</div>
+    <h2 class="h">Boolean algebra, applied</h2>
+    <div id="projectsHost"></div>
+  </div>
+</section>
+
+<!-- ================= QUIZ ================= -->
+<section class="view" id="view-quiz">
+  <div class="wrap-narrow">
+    <div class="section-tag">Quiz</div>
+    <h2 class="h">50 questions — score 80%+ for a certificate</h2>
+    <div class="quiz-shell">
+      <div class="quiz-head"><div class="mono" id="quizPos" style="font-size:12px; color:var(--muted);">Question 1</div><div class="score">Score: <span id="quizScore">0</span> / <span id="quizTotal">0</span></div></div>
+      <div class="quiz-body"><div class="quiz-progress-bar"><div class="quiz-progress-fill" id="quizProgressFill" style="width:0%;"></div></div><div id="quizArea"></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= FLASHCARDS ================= -->
+<section class="view" id="view-flashcards">
+  <div class="wrap-narrow">
+    <div class="section-tag">Flash Cards</div>
+    <h2 class="h">Flip to reveal</h2>
+    <div class="flash-wrap"><div class="flash-card" id="flashCard"><div class="flash-inner"><div class="flash-face front" id="flashFront"></div><div class="flash-face back" id="flashBack"></div></div></div></div>
+    <div class="flash-nav"><button class="btn ghost small" id="flashPrev">← Prev</button><button class="btn small" id="flashFlip">Flip</button><button class="btn ghost small" id="flashNext">Next →</button><button class="btn ghost small" id="flashShuffle">🔀 Shuffle</button></div>
+    <p style="text-align:center; margin-top:10px;" id="flashCounter"></p>
+  </div>
+</section>
+
+<!-- ================= FORMULA SHEET ================= -->
+<section class="view" id="view-formulasheet">
+  <div class="wrap-narrow">
+    <div class="section-tag">Formula Sheet</div>
+    <h2 class="h">All theorems, one page</h2>
+    <div class="btn-row"><button class="btn ghost" id="printFormulaBtn">🖨 Print / Save as PDF</button></div>
+    <div id="formulaSheetHost" style="margin-top:14px;"></div>
+  </div>
+</section>
+
+<!-- ================= APPLICATIONS ================= -->
+<section class="view" id="view-applications">
+  <div class="wrap-narrow">
+    <div class="section-tag">Real World Applications</div>
+    <h2 class="h">Where Boolean algebra actually runs</h2>
+    <div id="applicationsHost" class="two-col"></div>
+  </div>
+</section>
+
+<!-- ================= FAQ ================= -->
+<section class="view" id="view-faq">
+  <div class="wrap-narrow">
+    <div class="section-tag">FAQ</div>
+    <h2 class="h">Frequently asked questions</h2>
+    <div id="faqHost"></div>
+  </div>
+</section>
+
+<!-- ================= GLOSSARY ================= -->
+<section class="view" id="view-glossary">
+  <div class="wrap-narrow">
+    <div class="section-tag">Glossary</div>
+    <h2 class="h">A–Z Boolean terms</h2>
+    <div id="glossaryHost"></div>
+  </div>
+</section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="footer-divider"></div>
+  <div class="footer-copyright">© 2026 Developed by Mariya Dharshini 25UAD047</div>
+</footer>
+
+<button id="toTop" aria-label="Scroll to top">↑</button>
+
+<script>
+(function(){
+"use strict";
+
+/* =========================================================
+   CORE PARSER — shared by proofs, truth table, simplifier, circuit
+   ========================================================= */
+function tokenize(str){
+  const toks=[];
+  for(let i=0;i<str.length;i++){
+    const c=str[i];
+    if(/\s/.test(c)) continue;
+    if(/[A-Za-z]/.test(c)) toks.push({type:"VAR", value:c.toUpperCase()});
+    else if(c==="'") toks.push({type:"POSTFIX_NOT"});
+    else if(c==="!"||c==="~") toks.push({type:"PREFIX_NOT"});
+    else if(c==="."||c==="*") toks.push({type:"AND"});
+    else if(c==="+") toks.push({type:"OR"});
+    else if(c==="(") toks.push({type:"LP"});
+    else if(c===")") toks.push({type:"RP"});
+    else if(c==="0"||c==="1") toks.push({type:"CONST", value:parseInt(c,10)});
+  }
+  return toks;
+}
+function parseTokens(tokens){
+  let pos=0; const peek=()=>tokens[pos]; const consume=()=>tokens[pos++];
+  function isFactorStart(t){ return t && (t.type==="VAR"||t.type==="LP"||t.type==="PREFIX_NOT"||t.type==="CONST"); }
+  function parseExpr(){ let node=parseTerm(); while(peek() && peek().type==="OR"){ consume(); node={type:"OR", children:[node, parseTerm()]}; } return node; }
+  function parseTerm(){ let node=parseFactor(); while(peek() && peek().type==="AND"){ consume(); node={type:"AND", children:[node, parseFactor()]}; } while(peek() && isFactorStart(peek())){ node={type:"AND", children:[node, parseFactor()]}; } return node; }
+  function parseFactor(){
+    let node;
+    if(peek() && peek().type==="PREFIX_NOT"){ consume(); node={type:"NOT", n:parseFactor()}; }
+    else if(peek() && peek().type==="LP"){ consume(); node=parseExpr(); if(peek()&&peek().type==="RP") consume(); }
+    else if(peek() && peek().type==="VAR"){ node={type:"VAR", name:consume().value}; }
+    else if(peek() && peek().type==="CONST"){ node={type:"CONST", val:consume().value}; }
+    else throw new Error("Unexpected token near position "+pos);
+    while(peek() && peek().type==="POSTFIX_NOT"){ consume(); node={type:"NOT", n:node}; }
+    return node;
+  }
+  if(!tokens.length) throw new Error("Empty expression");
+  const ast=parseExpr();
+  if(pos<tokens.length) throw new Error("Unexpected trailing input");
+  return ast;
+}
+function detectVars(str){ return Array.from(new Set(tokenize(str).filter(t=>t.type==="VAR").map(t=>t.value))).sort(); }
+function evalAst(node, vals){
+  switch(node.type){
+    case "VAR": return vals[node.name];
+    case "CONST": return node.val;
+    case "NOT": return evalAst(node.n, vals)?0:1;
+    case "AND": return node.children.every(c=>evalAst(c,vals)) ? 1:0;
+    case "OR": return node.children.some(c=>evalAst(c,vals)) ? 1:0;
+  }
+}
+function bitsOf(row,n){ const b=[]; for(let i=n-1;i>=0;i--) b.push((row>>i)&1); return b; }
+
+/* Convert legacy binary AND/OR ({l,r}) parses aren't used — parser above already builds n-ary via children merge on repeated ops for same precedence level; but nested different-precedence still binary at boundaries. Provide a flatten pass so simplifier & circuit see clean n-ary AND/OR groups. */
+function flatten(node){
+  if(node.type==="AND"||node.type==="OR"){
+    let kids=[];
+    node.children.forEach(c=>{
+      const fc=flatten(c);
+      if(fc.type===node.type) kids.push(...fc.children); else kids.push(fc);
+    });
+    return {type:node.type, children:kids};
+  }
+  if(node.type==="NOT"){
+    const inner=flatten(node.n);
+    if(inner.type==="NOT") return inner.n; // double negation
+    return {type:"NOT", n:inner};
+  }
+  return node;
+}
+function exprToString(node){
+  if(node.type==="CONST") return String(node.val);
+  if(node.type==="VAR") return node.name;
+  if(node.type==="NOT"){ const inner=node.n; return (inner.type==="VAR") ? inner.name+"'" : "("+exprToString(inner)+")'"; }
+  if(node.type==="AND") return node.children.map(c=> (c.type==="OR") ? "("+exprToString(c)+")" : exprToString(c)).join("");
+  if(node.type==="OR") return node.children.map(c=> exprToString(c)).join(" + ");
+}
+
+/* =========================================================
+   PROOF-BY-TRUTH-TABLE (used by Theorems page)
+   ========================================================= */
+function generateProofTable(lhsStr, rhsStr){
+  const varsSet = new Set([...detectVars(lhsStr), ...detectVars(rhsStr)]);
+  const vars = Array.from(varsSet).sort();
+  const lhsAst = parseTokens(tokenize(lhsStr)), rhsAst = parseTokens(tokenize(rhsStr));
+  let rows=""; let allMatch=true;
+  for(let row=0; row<Math.pow(2,vars.length); row++){
+    const bits=bitsOf(row, vars.length); const vals={}; vars.forEach((v,i)=>vals[v]=bits[i]);
+    const l=evalAst(lhsAst, vals), r=evalAst(rhsAst, vals);
+    const match = l===r; if(!match) allMatch=false;
+    rows += `<tr>${bits.map(b=>`<td>${b}</td>`).join("")}<td>${l}</td><td>${r}</td><td class="${match?'match':''}">${match?'✔':'✘'}</td></tr>`;
+  }
+  const head = `<tr>${vars.map(v=>`<th>${v}</th>`).join("")}<th>LHS</th><th>RHS</th><th>Match</th></tr>`;
+  return { html:`<table class="proof-table"><thead>${head}</thead><tbody>${rows}</tbody></table>`, proven:allMatch, vars };
+}
+
+/* =========================================================
+   THEOREM DATA
+   ========================================================= */
+const theorems = [
+  {id:"identity", name:"Identity Law", forms:[["A+0","A"],["A.1","A"]], explanation:"OR-ing with 0, or AND-ing with 1, leaves a variable unchanged — 0 is the OR identity element and 1 is the AND identity element.", circuit:"An OR gate with one input tied to 0 just passes the other input through; an AND gate with one input tied to 1 does the same.", example:"If A represents a switch and we OR it with a permanently-open (0) wire, the output is simply A.", practiceQ:"Simplify: B + 0", practiceA:"B"},
+  {id:"null", name:"Null Law", forms:[["A+1","1"],["A.0","0"]], explanation:"OR-ing with 1 always gives 1; AND-ing with 0 always gives 0 — these constants dominate the result regardless of A.", circuit:"An OR gate with one input tied to 1 is always 1; an AND gate with one input tied to 0 is always 0.", example:"A safety override wired as A+1 always outputs 1, ignoring A completely.", practiceQ:"Simplify: C.0", practiceA:"0"},
+  {id:"idempotent", name:"Idempotent Law", forms:[["A+A","A"],["A.A","A"]], explanation:"Combining a variable with itself, whether by OR or AND, changes nothing.", circuit:"Feeding the same signal into both inputs of an OR or AND gate just reproduces that signal.", example:"Wiring the same sensor to both inputs of an AND gate outputs exactly the sensor's own value.", practiceQ:"Simplify: D+D", practiceA:"D"},
+  {id:"complement", name:"Complement Law", forms:[["A+A'","1"],["A.A'","0"]], explanation:"A variable and its complement between them cover every possible case: at least one is always 1 (so OR gives 1), and they can never both be 1 (so AND gives 0).", circuit:"An OR gate fed a signal and its inverted copy always outputs 1; an AND gate fed the same pair always outputs 0.", example:"A door sensor A and its inverse A' (via a NOT gate) OR'd together always reads 1 — the door is always either open or not open.", practiceQ:"Simplify: E.E'", practiceA:"0"},
+  {id:"involution", name:"Involution Law", forms:[["(A')'","A"]], explanation:"Complementing a value twice returns the original value — double negation cancels out.", circuit:"Two NOT gates in series (a 'double inverter') act as a simple buffer, reproducing the input.", example:"If A=1, then A'=0, and (A')'=1 — back to A.", practiceQ:"Simplify: (F')'", practiceA:"F"},
+  {id:"commutative", name:"Commutative Law", forms:[["A+B","B+A"],["A.B","B.A"]], explanation:"The order of operands doesn't matter for OR or AND — swapping them gives the same result.", circuit:"Swapping which wire goes into which input pin of an OR/AND gate doesn't change the output.", example:"A+B and B+A produce identical truth tables.", practiceQ:"Is A.B always equal to B.A?", practiceA:"Yes — by the Commutative Law."},
+  {id:"associative", name:"Associative Law", forms:[["(A+B)+C","A+(B+C)"],["(A.B).C","A.(B.C)"]], explanation:"When combining three or more variables with the same operator, grouping doesn't matter.", circuit:"Chaining 2-input OR (or AND) gates in any grouping order produces the same final output.", example:"(A+B)+C and A+(B+C) always match, letting you build a 3-input OR from two 2-input OR gates in either order.", practiceQ:"Does grouping change the result of A.B.C?", practiceA:"No — by the Associative Law."},
+  {id:"distributive", name:"Distributive Law", forms:[["A.(B+C)","A.B+A.C"],["A+(B.C)","(A+B).(A+C)"]], explanation:"AND distributes over OR (like ordinary multiplication over addition), and — less intuitively — OR also distributes over AND. Both directions are valid Boolean identities.", circuit:"A.(B+C) can be built either as one AND gate fed by an OR gate, or as two AND gates feeding one OR gate — same behavior, different gate counts.", example:"A.(B+C) = A.B + A.C lets you 'expand' a factored term into a canonical-style sum.", practiceQ:"Expand: A.(B+C')", practiceA:"A.B + A.C'"},
+  {id:"absorption", name:"Absorption Law", forms:[["A+A.B","A"],["A.(A+B)","A"]], explanation:"If A is already 1, A+AB is 1 regardless of B; if A is 0, both are 0. So the AB term is absorbed — it adds no new information once A is present.", circuit:"A+AB can be simplified from a 2-gate circuit (AND then OR) down to a single wire — a direct hardware saving.", example:"A+AB=A means an alarm condition 'A OR (A AND armed)' really just depends on A.", practiceQ:"Simplify: G + G.H", practiceA:"G"},
+  {id:"demorgan", name:"De Morgan's Theorem", forms:[["(A+B)'","A'.B'"],["(A.B)'","A'+B'"]], explanation:"The complement of an OR is the AND of the complements, and the complement of an AND is the OR of the complements. This is proven by checking all 4 input combinations for A and B (see the table) — every row matches, so the identity holds for every case (a complete proof by perfect induction).", circuit:"A NOR gate (OR then NOT) behaves exactly like an AND gate with both inputs inverted — and a NAND gate (AND then NOT) behaves like an OR gate with both inputs inverted.", example:"(A+B)' = A'B' means 'NOT (A OR B)' is the same condition as 'NOT A AND NOT B'.", practiceQ:"Apply De Morgan's: (A.B.C)' = ?", practiceA:"A' + B' + C'"},
+  {id:"consensus", name:"Consensus Theorem", forms:[["A.B+A'.C+B.C","A.B+A'.C"]], explanation:"The BC term is redundant: whenever B=C=1, either A=1 (so AB already covers it) or A=0 (so A'C already covers it) — BC never contributes a case the other two terms don't already cover.", circuit:"Removing the BC term eliminates one AND gate and one OR input from the physical circuit with no change in behavior.", example:"In A.B+A'.C+B.C, drop BC to get the simpler equivalent A.B+A'.C.", practiceQ:"Why is BC called the 'consensus term'?", practiceA:"Because it's the term you get by combining the two other terms on their complementary variable (A and A') — and it's always redundant."}
+];
+
+/* =========================================================
+   NORMALIZE (De Morgan push-in + flatten) for the Simplifier
+   ========================================================= */
+function pushNotIn(node){
+  if(node.type==="NOT"){
+    const inner = pushNotIn(node.n);
+    if(inner.type==="NOT") return inner.n;
+    if(inner.type==="AND") return {type:"OR", children:inner.children.map(c=>pushNotIn({type:"NOT", n:c}))};
+    if(inner.type==="OR") return {type:"AND", children:inner.children.map(c=>pushNotIn({type:"NOT", n:c}))};
+    return {type:"NOT", n:inner};
+  }
+  if(node.type==="AND"||node.type==="OR") return { type:node.type, children:node.children.map(pushNotIn) };
+  return node;
+}
+function normalize(ast){ return flatten(pushNotIn(flatten(ast))); }
+
+function exprKey(node){
+  if(node.type==="CONST") return "C"+node.val;
+  if(node.type==="VAR") return node.name;
+  if(node.type==="NOT") return "N("+exprKey(node.n)+")";
+  return node.type+"("+node.children.map(exprKey).sort().join(",")+")";
+}
+function literalSetOf(node){
+  if(node.type==="VAR") return {[node.name]:1};
+  if(node.type==="NOT" && node.n.type==="VAR") return {[node.n.name]:0};
+  if(node.type==="AND"||node.type==="OR"){
+    const set={};
+    for(const c of node.children){
+      if(c.type==="VAR") set[c.name]=1;
+      else if(c.type==="NOT"&&c.n.type==="VAR") set[c.n.name]=0;
+      else return null;
+    }
+    return set;
+  }
+  return null;
+}
+function isProperSubset(a,b){
+  if(!a||!b) return false;
+  const ak=Object.keys(a), bk=Object.keys(b);
+  if(ak.length>=bk.length) return false;
+  return ak.every(k=> b[k]===a[k]);
+}
+function tryRewriteNode(node){
+  if(node.type!=="AND" && node.type!=="OR") return null;
+  const dom = node.type==="AND" ? 0 : 1;      // dominating constant
+  const idn = node.type==="AND" ? 1 : 0;      // identity constant
+  const lawDom = node.type==="AND" ? "Null Law (A\u00B70=0)" : "Null Law (A+1=1)";
+  const lawIdn = node.type==="AND" ? "Identity Law (A\u00B71=A)" : "Identity Law (A+0=A)";
+  const lawIdem = node.type==="AND" ? "Idempotent Law (A\u00B7A=A)" : "Idempotent Law (A+A=A)";
+  const lawComp = node.type==="AND" ? "Complement Law (A\u00B7A'=0)" : "Complement Law (A+A'=1)";
+
+  if(node.children.some(c=>c.type==="CONST" && c.val===dom)) return { node:{type:"CONST", val:dom}, law:lawDom };
+  if(node.children.some(c=>c.type==="CONST" && c.val===idn)){
+    const filtered = node.children.filter(c=>!(c.type==="CONST"&&c.val===idn));
+    const nn = filtered.length===0? {type:"CONST", val:idn} : filtered.length===1? filtered[0] : {type:node.type, children:filtered};
+    return { node:nn, law:lawIdn };
+  }
+  const seen=new Set(); const dedup=[]; let dup=false;
+  node.children.forEach(c=>{ const k=exprKey(c); if(seen.has(k)) dup=true; else { seen.add(k); dedup.push(c); } });
+  if(dup){ const nn = dedup.length===1? dedup[0] : {type:node.type, children:dedup}; return { node:nn, law:lawIdem }; }
+
+  const litMap={};
+  for(const c of node.children){
+    let name=null, pol=null;
+    if(c.type==="VAR"){ name=c.name; pol=1; }
+    else if(c.type==="NOT"&&c.n.type==="VAR"){ name=c.n.name; pol=0; }
+    if(name){ if(litMap[name]!==undefined && litMap[name]!==pol) return { node:{type:"CONST", val:dom}, law:lawComp }; litMap[name]=pol; }
+  }
+
+  for(let i=0;i<node.children.length;i++){
+    for(let j=0;j<node.children.length;j++){
+      if(i===j) continue;
+      const si=literalSetOf(node.children[i]), sj=literalSetOf(node.children[j]);
+      if(isProperSubset(si,sj)){
+        const nn2 = node.children.filter((_,idx)=>idx!==j);
+        const nn = nn2.length===1? nn2[0] : {type:node.type, children:nn2};
+        return { node:nn, law:"Absorption Law ("+(node.type==="OR"?"A+AB=A":"A(A+B)=A")+")" };
+      }
+    }
+  }
+  return null;
+}
+function walkAndRewrite(node){
+  if(node.type==="AND"||node.type==="OR"){
+    const direct = tryRewriteNode(node);
+    if(direct) return direct;
+    for(let i=0;i<node.children.length;i++){
+      const res = walkAndRewrite(node.children[i]);
+      if(res){ const nc=node.children.slice(); nc[i]=res.node; return { node:{type:node.type, children:nc}, law:res.law }; }
+    }
+  }
+  if(node.type==="NOT"){
+    const res = walkAndRewrite(node.n);
+    if(res) return { node:{type:"NOT", n:res.node}, law:res.law };
+  }
+  return null;
+}
+function simplifyWithSteps(exprStr){
+  const raw = parseTokens(tokenize(exprStr));
+  let current = normalize(raw);
+  const steps=[{law:"Start", expr:exprToString(current)}];
+  let guard=0;
+  while(guard<25){
+    guard++;
+    const res = walkAndRewrite(flatten(current));
+    if(!res) break;
+    current = flatten(res.node);
+    steps.push({ law:res.law, expr: (current.type==="CONST") ? String(current.val) : exprToString(current) });
+  }
+  return { finalExpr: (current.type==="CONST")?String(current.val):exprToString(current), steps };
+}
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+const pageOrder = ["home","about","intro","theorems","truthtable","simplifier","circuit","projects","quiz","flashcards","formulasheet","applications","faq","glossary"];
+const titles = { home:"Home", about:"About", intro:"Introduction", theorems:"Boolean Theorems", truthtable:"Truth Table Generator", simplifier:"Expression Simplifier", circuit:"Circuit Visualizer", projects:"Mini Projects", quiz:"Quiz", flashcards:"Flash Cards", formulasheet:"Formula Sheet", applications:"Applications", faq:"FAQ", glossary:"Glossary" };
+
+function updateProgress(view){
+  let done; try{ done = JSON.parse(localStorage.getItem("boolTheoremProgress")||"[]"); }catch(e){ done=[]; }
+  if(!done.includes(view)) done.push(view);
+  try{ localStorage.setItem("boolTheoremProgress", JSON.stringify(done)); }catch(e){}
+  const pct = Math.round(done.length/pageOrder.length*100);
+  document.getElementById("progressText").textContent = done.length+"/"+pageOrder.length;
+  document.getElementById("progressFill").style.width = pct+"%";
+}
+function goTo(view){
+  document.querySelectorAll(".view").forEach(v=>{ v.classList.remove("active"); v.classList.remove("print-target"); });
+  const target=document.getElementById("view-"+view);
+  target.classList.add("active"); target.classList.add("print-target");
+  document.querySelectorAll(".drawer-nav a").forEach(a=>a.classList.toggle("active", a.dataset.target===view));
+  closeDrawer(); window.scrollTo({top:0, behavior:"auto"}); triggerReveals(); updateProgress(view);
+}
+document.querySelectorAll("[data-target]").forEach(el=> el.addEventListener("click", ()=> goTo(el.dataset.target)));
+document.getElementById("startBtn").addEventListener("click", ()=> goTo("intro"));
+
+const drawer=document.getElementById("drawer"), overlay=document.getElementById("drawerOverlay");
+function openDrawer(){ drawer.classList.add("open"); overlay.classList.add("show"); }
+function closeDrawer(){ drawer.classList.remove("open"); overlay.classList.remove("show"); }
+document.getElementById("menuBtn").addEventListener("click", openDrawer);
+document.getElementById("drawerClose").addEventListener("click", closeDrawer);
+overlay.addEventListener("click", closeDrawer);
+
+const themeToggle=document.getElementById("themeToggle");
+themeToggle.addEventListener("click", ()=>{
+  const isLight=document.body.classList.toggle("light");
+  themeToggle.textContent = isLight ? "☀️" : "🌙";
+  themeToggle.setAttribute("aria-pressed", String(!isLight));
+});
+
+const searchInput=document.getElementById("searchInput");
+searchInput.addEventListener("keydown", (e)=>{
+  if(e.key==="Enter"){
+    const q=searchInput.value.trim().toLowerCase();
+    const match=pageOrder.find(p=>titles[p].toLowerCase().includes(q));
+    if(match){ goTo(match); showToast("Jumped to "+titles[match]); return; }
+    const th = theorems.find(t=>t.name.toLowerCase().includes(q));
+    if(th){ goTo("theorems"); showToast("Jumped to "+th.name); }
+  }
+});
+document.getElementById("theoremSearch").addEventListener("input", (e)=>{
+  const q=e.target.value.trim().toLowerCase();
+  document.querySelectorAll(".theorem-card").forEach(card=>{
+    const hay=(card.dataset.name||"").toLowerCase();
+    card.style.display = (!q || hay.includes(q)) ? "" : "none";
+  });
+});
+
+document.addEventListener("keydown", (e)=>{
+  const tag=(e.target.tagName||"").toLowerCase();
+  if(tag==="input"||tag==="textarea"||tag==="select"){ if(e.key==="Escape") e.target.blur(); return; }
+  if(e.key==="Escape"){ closeDrawer(); return; }
+  if(e.key==="/"){ e.preventDefault(); searchInput.focus(); return; }
+  if(e.key.toLowerCase()==="d"){ themeToggle.click(); return; }
+  if(/^[1-9]$/.test(e.key)){ const idx=parseInt(e.key,10)-1; if(pageOrder[idx]) goTo(pageOrder[idx]); }
+});
+
+const progressBar=document.getElementById("scrollProgress"), toTopBtn=document.getElementById("toTop");
+window.addEventListener("scroll", ()=>{
+  const h=document.documentElement;
+  const pct = h.scrollTop / (h.scrollHeight - h.clientHeight || 1) * 100;
+  progressBar.style.width = pct+"%";
+  toTopBtn.classList.toggle("show", h.scrollTop > 400);
+});
+toTopBtn.addEventListener("click", ()=> window.scrollTo({top:0, behavior:"smooth"}));
+
+function showToast(msg){
+  const host=document.getElementById("toastHost");
+  const t=document.createElement("div"); t.className="toast"; t.textContent=msg;
+  host.appendChild(t); requestAnimationFrame(()=>t.classList.add("show"));
+  setTimeout(()=>{ t.classList.remove("show"); setTimeout(()=>t.remove(), 300); }, 2400);
+}
+function triggerReveals(){ document.querySelectorAll(".view.active .reveal").forEach(el=>el.classList.add("in")); }
+const revealObserver = new IntersectionObserver((entries)=>{ entries.forEach(e=>{ if(e.isIntersecting) e.target.classList.add("in"); }); }, {threshold:0.15});
+document.querySelectorAll(".reveal").forEach(el=>revealObserver.observe(el));
+window.addEventListener("load", ()=>{ setTimeout(()=>document.getElementById("loader").classList.add("hide"), 500); });
+(function(){ const field=document.getElementById("particleField"); for(let i=0;i<16;i++){ const p=document.createElement("div"); p.className="particle"; p.style.left=(Math.random()*100)+"%"; p.style.animationDuration=(8+Math.random()*10)+"s"; p.style.animationDelay=(Math.random()*10)+"s"; p.style.bottom="-10px"; field.appendChild(p); } })();
+const counterObserver = new IntersectionObserver((entries)=>{ entries.forEach(e=>{ if(!e.isIntersecting) return; const el=e.target, target=parseInt(el.dataset.count,10); let cur=0; const step=Math.max(1, Math.round(target/30)); const timer=setInterval(()=>{ cur+=step; if(cur>=target){cur=target; clearInterval(timer);} el.textContent=cur; }, 30); counterObserver.unobserve(el); }); }, {threshold:0.4});
+document.querySelectorAll(".counter-num").forEach(el=>counterObserver.observe(el));
+
+/* =========================================================
+   THEOREMS PAGE render
+   ========================================================= */
+function renderTheorems(){
+  const host=document.getElementById("theoremsHost");
+  host.innerHTML = theorems.map(t=>{
+    const proofsHTML = t.forms.map(([lhs,rhs])=>{
+      const proof = generateProofTable(lhs, rhs);
+      return `<div class="formula-chip">${lhs} = ${rhs}</div>${proof.html}<p style="font-size:12.5px; margin-top:-4px;">${proof.proven? "✅ LHS = RHS for every row — proven by perfect induction." : "⚠️ Mismatch found (check input)."}</p>`;
+    }).join("<div style='height:8px;'></div>");
+    return `<div class="theorem-card reveal in" data-name="${t.name} ${t.forms.map(f=>f[0]+' '+f[1]).join(' ')}">
+      <h3>${t.name}</h3>
+      <p>${t.explanation}</p>
+      <details class="acc"><summary>Show proof by truth table</summary>${proofsHTML}</details>
+      <details class="acc"><summary>Circuit interpretation</summary><p>${t.circuit}</p></details>
+      <details class="acc"><summary>Example</summary><p>${t.example}</p></details>
+      <details class="acc"><summary>Practice question</summary><p><strong>Q:</strong> ${t.practiceQ}</p><p><strong>A:</strong> ${t.practiceA}</p></details>
+    </div>`;
+  }).join("");
+
+  const theoremIcons = { identity:"➕", null:"🚫", idempotent:"♻️", complement:"↔️", involution:"⏪", commutative:"🔀", associative:"🧩", distributive:"📐", absorption:"🫧", demorgan:"🔁", consensus:"🤝" };
+  const tabsHost=document.getElementById("proofTabs");
+  tabsHost.innerHTML = theorems.map(t=>`<button type="button" class="theorem-tab" data-id="${t.id}" role="tab"><span class="t-ic">${theoremIcons[t.id]||"Σ"}</span>${t.name}</button>`).join("");
+
+  const progressRow=document.getElementById("proofProgressRow");
+  const out=document.getElementById("proofSelectorOut");
+  const prevBtn=document.getElementById("proofPrevBtn");
+  const nextBtn=document.getElementById("proofNextBtn");
+  const playBtn=document.getElementById("proofPlayBtn");
+  const stepCount=document.getElementById("proofStepCount");
+
+  let proofState = { theoremId: theorems[0].id, stepIdx: 0, steps: [], playTimer: null };
+
+  function buildSteps(t){
+    const steps=[];
+    t.forms.forEach(([lhs,rhs])=>{
+      const proof = generateProofTable(lhs, rhs);
+      steps.push({ tag:"Step 1 — State the identity", body:`<div class="proof-law-highlight mono">${lhs} = ${rhs}</div><p style="margin-top:8px;">${t.explanation}</p>` });
+      steps.push({ tag:"Step 2 — Evaluate both sides for every input", body: proof.html });
+      steps.push({ tag:"Final Result", body:`<div class="proof-final-banner">${proof.proven? "✅ Every row matches — the identity is proven by perfect induction.":"⚠️ Mismatch found."}</div>`, final:true });
+    });
+    return steps;
+  }
+
+  function stopAutoPlay(){ if(proofState.playTimer){ clearInterval(proofState.playTimer); proofState.playTimer=null; } playBtn.classList.remove("playing"); playBtn.textContent="▶ Auto Play"; }
+
+  function renderStep(){
+    const { steps, stepIdx } = proofState;
+    const step = steps[stepIdx];
+    out.innerHTML = `<div class="proof-card-slide"><div class="proof-step-tag">${step.final?"🏁":"🔎"} ${step.tag}</div><div class="proof-card-body">${step.body}</div></div>`;
+    progressRow.innerHTML = steps.map((s,i)=>`<div class="proof-dot ${i<stepIdx?'done':''} ${i===stepIdx?'current':''}" data-idx="${i}"><div class="fill" style="${i<=stepIdx?'width:100%;':''}"></div></div>`).join("");
+    progressRow.querySelectorAll(".proof-dot").forEach(d=>d.addEventListener("click", ()=>{ stopAutoPlay(); proofState.stepIdx=parseInt(d.dataset.idx,10); renderStep(); }));
+    prevBtn.disabled = stepIdx===0;
+    nextBtn.disabled = stepIdx===steps.length-1;
+    stepCount.textContent = `Step ${stepIdx+1} of ${steps.length}`;
+    if(stepIdx===steps.length-1) stopAutoPlay();
+  }
+
+  function selectTheorem(id){
+    stopAutoPlay();
+    proofState.theoremId = id;
+    const t = theorems.find(x=>x.id===id);
+    proofState.steps = buildSteps(t);
+    proofState.stepIdx = 0;
+    tabsHost.querySelectorAll(".theorem-tab").forEach(btn=>btn.classList.toggle("active", btn.dataset.id===id));
+    renderStep();
+  }
+
+  tabsHost.querySelectorAll(".theorem-tab").forEach(btn=>btn.addEventListener("click", ()=> selectTheorem(btn.dataset.id)));
+  prevBtn.addEventListener("click", ()=>{ stopAutoPlay(); if(proofState.stepIdx>0){ proofState.stepIdx--; renderStep(); } });
+  nextBtn.addEventListener("click", ()=>{ stopAutoPlay(); if(proofState.stepIdx<proofState.steps.length-1){ proofState.stepIdx++; renderStep(); } });
+  playBtn.addEventListener("click", ()=>{
+    if(proofState.playTimer){ stopAutoPlay(); return; }
+    if(proofState.stepIdx>=proofState.steps.length-1) proofState.stepIdx=0;
+    playBtn.classList.add("playing"); playBtn.textContent="⏸ Pause";
+    proofState.playTimer = setInterval(()=>{
+      if(proofState.stepIdx>=proofState.steps.length-1){ stopAutoPlay(); return; }
+      proofState.stepIdx++; renderStep();
+    }, 1800);
+  });
+
+  selectTheorem(theorems[0].id);
+}
+renderTheorems();
+
+/* =========================================================
+   TRUTH TABLE GENERATOR PAGE
+   ========================================================= */
+function renderTruthTablePage(exprStr){
+  const out=document.getElementById("ttOut");
+  try{
+    const vars=detectVars(exprStr);
+    if(vars.length===0) throw new Error("No variables found.");
+    if(vars.length>4) throw new Error("Supports up to 4 variables (A–D).");
+    const ast=parseTokens(tokenize(exprStr));
+    let rows="";
+    for(let row=0; row<Math.pow(2,vars.length); row++){
+      const bits=bitsOf(row,vars.length); const vals={}; vars.forEach((v,i)=>vals[v]=bits[i]);
+      const val=evalAst(ast, vals);
+      rows += `<tr>${bits.map(b=>`<td>${b}</td>`).join("")}<td class="${val===1?'out1':'out0'}">${val}</td></tr>`;
+    }
+    out.innerHTML = `<table class="truth" id="ttResultTable"><thead><tr>${vars.map(v=>`<th>${v}</th>`).join("")}<th>F</th></tr></thead><tbody>${rows}</tbody></table>`;
+  }catch(err){ out.innerHTML = `<div class="err-msg">${err.message}</div>`; }
+}
+document.getElementById("ttGenBtn").addEventListener("click", ()=> renderTruthTablePage(document.getElementById("ttExprInput").value));
+document.getElementById("ttCopyBtn").addEventListener("click", ()=>{
+  const table=document.getElementById("ttResultTable"); if(!table) return;
+  navigator.clipboard && navigator.clipboard.writeText(table.innerText).then(()=>showToast("Table copied"));
+});
+renderTruthTablePage(document.getElementById("ttExprInput").value);
+
+/* =========================================================
+   SIMPLIFIER PAGE
+   ========================================================= */
+function renderSimplifier(exprStr){
+  const out=document.getElementById("simpOut");
+  try{
+    const result = simplifyWithSteps(exprStr);
+    let html = result.steps.map((s,i)=>`<div class="step-card ${i===result.steps.length-1?'final':''}" style="animation-delay:${i*0.12}s;"><div class="tag">${i===0?'Original expression':s.law}</div><span class="mono">${s.expr}</span></div>`).join("");
+    html += `<div class="btn-row"><button class="btn ghost small" id="simpCopyBtn">📋 Copy result</button></div>`;
+    out.innerHTML = html;
+    const copyBtn=document.getElementById("simpCopyBtn");
+    if(copyBtn) copyBtn.addEventListener("click", ()=> navigator.clipboard && navigator.clipboard.writeText(result.finalExpr).then(()=>showToast("Copied")));
+  }catch(err){ out.innerHTML = `<div class="err-msg">${err.message}</div>`; }
+}
+document.getElementById("simpRunBtn").addEventListener("click", ()=> renderSimplifier(document.getElementById("simpExprInput").value));
+document.getElementById("simpResetBtn").addEventListener("click", ()=>{ document.getElementById("simpExprInput").value=""; document.getElementById("simpOut").innerHTML=""; });
+renderSimplifier(document.getElementById("simpExprInput").value);
+
+/* =========================================================
+   CIRCUIT VISUALIZER — real gate symbols, orthogonal wiring,
+   animated signal flow
+   ========================================================= */
+let circuitState = { ast:null, vars:[], inputVals:{} };
+function buildCircuit(exprStr){
+  const wrap=document.getElementById("circuitSvgWrap");
+  try{
+    const vars=detectVars(exprStr);
+    if(vars.length===0) throw new Error("No variables found.");
+    if(vars.length>4) throw new Error("Supports up to 4 variables (A–D).");
+    const ast=parseTokens(tokenize(exprStr));
+    circuitState.ast=ast; circuitState.vars=vars;
+    vars.forEach(v=>{ if(!(v in circuitState.inputVals)) circuitState.inputVals[v]=1; });
+    Object.keys(circuitState.inputVals).forEach(k=>{ if(!vars.includes(k)) delete circuitState.inputVals[k]; });
+    renderCircuitSvg();
+  }catch(err){ wrap.innerHTML = `<div class="err-msg">${err.message}</div>`; }
+}
+
+/* ---- classify the parsed AST into a render-tree that recognizes
+        NAND / NOR / XOR / XNOR patterns, in addition to AND/OR/NOT ---- */
+function literalInfoRC(node){
+  if(node.type==="VAR") return {name:node.name, pol:1};
+  if(node.type==="NOT" && node.n.type==="VAR") return {name:node.n.name, pol:0};
+  return null;
+}
+function detectXorXnor(orNode){
+  if(orNode.children.length!==2) return null;
+  const [c1,c2]=orNode.children;
+  if(c1.type!=="AND"||c2.type!=="AND") return null;
+  if(c1.children.length!==2||c2.children.length!==2) return null;
+  const l1=c1.children.map(literalInfoRC), l2=c2.children.map(literalInfoRC);
+  if(l1.some(x=>!x)||l2.some(x=>!x)) return null;
+  if(l1[0].name===l1[1].name) return null;
+  const m1={}, m2={}; l1.forEach(x=>m1[x.name]=x.pol); l2.forEach(x=>m2[x.name]=x.pol);
+  const names=Object.keys(m1);
+  if(names.length!==2) return null;
+  if(!Object.keys(m2).every(n=>names.includes(n))) return null;
+  const isComplement = names.every(n=> m2[n]===1-m1[n]);
+  if(!isComplement) return null;
+  const uniform = l1[0].pol===l1[1].pol;
+  return { kind: uniform?"XNOR":"XOR", names };
+}
+function toRenderNode(node){
+  if(node.type==="VAR") return { kind:"VAR", name:node.name, orig:node };
+  if(node.type==="CONST") return { kind:"CONST", val:node.val, orig:node };
+  if(node.type==="NOT"){
+    const inner=node.n;
+    if(inner.type==="AND") return { kind:"NAND", children:inner.children.map(toRenderNode), orig:node };
+    if(inner.type==="OR"){
+      const xnor = detectXorXnor(inner);
+      if(xnor) return { kind:"XNOR", children:xnor.names.map(n=>({kind:"VAR", name:n, orig:{type:"VAR", name:n}})), orig:node };
+      return { kind:"NOR", children:inner.children.map(toRenderNode), orig:node };
+    }
+    return { kind:"NOT", children:[toRenderNode(inner)], orig:node };
+  }
+  if(node.type==="AND") return { kind:"AND", children:node.children.map(toRenderNode), orig:node };
+  if(node.type==="OR"){
+    const xor = detectXorXnor(node);
+    if(xor) return { kind:xor.kind, children:xor.names.map(n=>({kind:"VAR", name:n, orig:{type:"VAR", name:n}})), orig:node };
+    return { kind:"OR", children:node.children.map(toRenderNode), orig:node };
+  }
+}
+function valOf(node){
+  const iv = circuitState.inputVals;
+  switch(node.type){
+    case "VAR": return iv[node.name];
+    case "CONST": return node.val;
+    case "NOT": return valOf(node.n)?0:1;
+    case "AND": return node.children.every(c=>valOf(c))?1:0;
+    case "OR": return node.children.some(c=>valOf(c))?1:0;
+  }
+}
+
+/* ---- gate geometry: real IEEE-style bodies for every gate kind ---- */
+const GATE_W=72, BUBBLE_R=5, XOR_GAP=7, OUT_STUB=18, ROWH=92, COL_SPACING=250, SWITCH_W=54, SWITCH_H=26;
+const MARGIN_L=130, MARGIN_T=76, MARGIN_R=130, MARGIN_B=76, MIN_GATE_GAP=100;
+
+function buildGateSvg(kind, cx, cy, h){
+  const w=GATE_W, x0=cx-w/2, tip=cx+w/2;
+  let bodyPath="", extra="", labelText=kind, leftX=x0, preStubX=tip;
+  if(kind==="AND"||kind==="NAND"){
+    const rectPart=w-h/2, flatX=x0+rectPart;
+    bodyPath = `M ${x0} ${cy-h/2} L ${flatX} ${cy-h/2} A ${h/2} ${h/2} 0 0 1 ${flatX} ${cy+h/2} L ${x0} ${cy+h/2} Z`;
+    labelText = kind==="NAND"?"NAND":"AND";
+    preStubX = flatX+h/2;
+  } else if(kind==="OR"||kind==="NOR"||kind==="XOR"||kind==="XNOR"){
+    if(kind==="XOR"||kind==="XNOR"){
+      leftX = x0-XOR_GAP;
+      extra = `<path class="gate-body" style="fill:none;" d="M ${x0-XOR_GAP} ${cy-h/2} Q ${x0-XOR_GAP+w*0.34} ${cy} ${x0-XOR_GAP} ${cy+h/2}"/>`;
+    }
+    bodyPath = `M ${x0} ${cy-h/2} Q ${x0+w*0.34} ${cy} ${x0} ${cy+h/2} Q ${x0+w*0.66} ${cy+h/2} ${tip} ${cy} Q ${x0+w*0.66} ${cy-h/2} ${x0} ${cy-h/2} Z`;
+    labelText = kind;
+    preStubX = tip;
+  } else if(kind==="NOT"){
+    const tip2 = cx+w/2-BUBBLE_R*2;
+    bodyPath = `M ${x0} ${cy-h/2} L ${x0} ${cy+h/2} L ${tip2} ${cy} Z`;
+    labelText = "NOT";
+    preStubX = tip2;
+  }
+  const hasBubble = (kind==="NAND"||kind==="NOR"||kind==="XNOR"||kind==="NOT");
+  let bubbleCx=null, edgeX=preStubX;
+  if(hasBubble){ bubbleCx = preStubX+BUBBLE_R; edgeX = bubbleCx+BUBBLE_R; }
+  const outX = edgeX+OUT_STUB;
+  return { bodyPath, extra, labelText, leftX, hasBubble, bubbleCx, edgeX, outX, cx, cy, h };
+}
+
+/* ---- hierarchical (Sugiyama-style) layout -----------------------------
+   1) every node is assigned a LEVEL = longest-path distance from the
+      leaves, so every gate that feeds a later gate always sits in an
+      earlier column — inputs on the left, output on the right.
+   2) each level becomes one fixed-width column (COL_SPACING apart) so
+      gates never drift into a neighbouring column.
+   3) a node's raw Y is the average of its already-placed children, then
+      each column is swept top-to-bottom enforcing a minimum gap
+      (MIN_GATE_GAP, 80-120px) between gate edges so nothing overlaps —
+      this guarantees no two gates/wires/labels in the same column can
+      collide, regardless of how the expression is shaped.
+   ------------------------------------------------------------------- */
+function computeGateHeight(rn){ return Math.max(46, rn.children.length*34); }
+
+function layoutCircuit(root, vars){
+  const varPos={}; vars.forEach((v,i)=> varPos[v] = { x:MARGIN_L, y:i*ROWH+MARGIN_T });
+  let hasConst=false;
+  (function scan(rn){ if(rn.kind==="CONST") hasConst=true; if(rn.children) rn.children.forEach(scan); })(root);
+  const constY = vars.length*ROWH+MARGIN_T;
+
+  /* level = longest path to a leaf; leaves are level 0 */
+  const levelMap=new Map();
+  function levelOf(rn){
+    if(rn.kind==="VAR"||rn.kind==="CONST") return 0;
+    if(levelMap.has(rn)) return levelMap.get(rn);
+    const lv = 1+Math.max(...rn.children.map(levelOf));
+    levelMap.set(rn, lv);
+    return lv;
+  }
+  const rootLevel = levelOf(root);
+
+  /* collect internal nodes grouped by level, left-to-right (DFS) order */
+  const byLevel = [];
+  (function collect(rn){
+    if(rn.kind==="VAR"||rn.kind==="CONST") return;
+    const lv = levelMap.get(rn);
+    (byLevel[lv] = byLevel[lv]||[]).push(rn);
+    rn.children.forEach(collect);
+  })(root);
+
+  const heightMap=new Map();
+  (function computeHeights(rn){ if(!rn.children) return; heightMap.set(rn, computeGateHeight(rn)); rn.children.forEach(computeHeights); })(root);
+
+  const posMap=new Map();
+  function posOf(rn){ if(rn.kind==="VAR") return varPos[rn.name]; if(rn.kind==="CONST") return {x:MARGIN_L,y:constY}; return posMap.get(rn); }
+
+  for(let lv=1; lv<=rootLevel; lv++){
+    const nodes = byLevel[lv] || [];
+    const colX = MARGIN_L + lv*COL_SPACING;
+    /* raw y = average of children's (already finalized) y */
+    const withRaw = nodes.map(rn=>({
+      rn,
+      rawY: rn.children.reduce((s,c)=>s+posOf(c).y,0)/rn.children.length
+    }));
+    withRaw.sort((a,b)=>a.rawY-b.rawY);
+    let prevY=null, prevH=0;
+    withRaw.forEach(entry=>{
+      const h = heightMap.get(entry.rn);
+      let y = entry.rawY;
+      if(prevY!==null){
+        const minY = prevY + prevH/2 + h/2 + MIN_GATE_GAP;
+        if(y < minY) y = minY;
+      }
+      posMap.set(entry.rn, { x:colX, y });
+      prevY=y; prevH=h;
+    });
+  }
+
+  const rootPos = posOf(root);
+  return { varPos, posMap, rootPos, constY, hasConst, rootLevel, heightMap };
+}
+
+function renderCircuitSvg(){
+  const { ast, vars, inputVals } = circuitState;
+  const root = toRenderNode(ast);
+  const { varPos, posMap, rootPos, constY, hasConst, heightMap } = layoutCircuit(root, vars);
+
+  function posOf(rn){ if(rn.kind==="VAR") return varPos[rn.name]; if(rn.kind==="CONST") return {x:MARGIN_L,y:constY}; return posMap.get(rn); }
+  function onOf(rn){ return valOf(rn.orig)===1; }
+
+  const geomMap = new Map();
+  function geomOf(rn){
+    if(geomMap.has(rn)) return geomMap.get(rn);
+    const p = posOf(rn), h = heightMap.get(rn);
+    const g = buildGateSvg(rn.kind, p.x, p.y, h);
+    geomMap.set(rn, g);
+    return g;
+  }
+  function outXOf(rn){
+    if(rn.kind==="VAR"||rn.kind==="CONST"){ const p=posOf(rn); return p.x + SWITCH_W/2 + OUT_STUB; }
+    return geomOf(rn).outX;
+  }
+
+  const rootOutX = outXOf(root);
+  const ledPos = { x: rootOutX+64, y: rootPos.y };
+
+  /* dynamic canvas size: grows automatically with tree depth (columns)
+     and with however tall the tallest column ended up being */
+  let maxY = vars.length? (vars.length-1)*ROWH+MARGIN_T : MARGIN_T;
+  if(hasConst) maxY = Math.max(maxY, constY);
+  (function scanY(rn){ if(rn.children){ const p=posOf(rn), h=heightMap.get(rn); maxY=Math.max(maxY, p.y+h/2); rn.children.forEach(scanY); } })(root);
+  maxY = Math.max(maxY, ledPos.y);
+
+  const width = ledPos.x + MARGIN_R;
+  const height = maxY + MARGIN_B;
+
+  const parts = [];
+
+  /* wires — orthogonal (90°) routing, drawn first so gates/pins sit on top */
+  function drawWires(rn){
+    if(!rn.children) return;
+    const g = geomOf(rn), p = posOf(rn), h = heightMap.get(rn), k = rn.children.length;
+    rn.children.forEach((child,i)=>{
+      const pinY = k===1 ? p.y : (p.y - h/2 + h*(i+0.5)/k);
+      const childOutX = outXOf(child), childY = posOf(child).y;
+      const on = onOf(child);
+      const targetX = g.leftX;
+      let d;
+      if(Math.abs(childY-pinY) < 0.5){
+        d = `M ${childOutX} ${childY} L ${targetX} ${pinY}`;
+      } else {
+        const midX = childOutX + Math.max(28, (targetX-childOutX)/2);
+        d = `M ${childOutX} ${childY} H ${midX} V ${pinY} H ${targetX}`;
+      }
+      parts.push(`<path class="wire ${on?'on':''}" d="${d}"/>`);
+      drawWires(child);
+    });
+  }
+  drawWires(root);
+
+  /* per-gate output stub (edge of shape/bubble → connection point) */
+  function drawStubs(rn){
+    if(!rn.children) return;
+    const g = geomOf(rn), p = posOf(rn), on = onOf(rn);
+    parts.push(`<path class="wire ${on?'on':''}" d="M ${g.edgeX} ${p.y} L ${g.outX} ${p.y}"/>`);
+    rn.children.forEach(drawStubs);
+  }
+  drawStubs(root);
+
+  /* input switch stubs */
+  vars.forEach(v=>{
+    const p=varPos[v], on = inputVals[v]===1;
+    parts.push(`<path class="wire ${on?'on':''}" d="M ${p.x+SWITCH_W/2} ${p.y} L ${p.x+SWITCH_W/2+OUT_STUB} ${p.y}"/>`);
+  });
+
+  /* final wire into the output LED */
+  const rootOn = onOf(root);
+  parts.push(`<path class="wire ${rootOn?'on':''}" d="M ${rootOutX} ${rootPos.y} L ${ledPos.x-20} ${ledPos.y}"/>`);
+
+  /* gate bodies */
+  function drawGates(rn){
+    if(!rn.children){ return; }
+    const g = geomOf(rn), on = onOf(rn);
+    parts.push(g.extra);
+    parts.push(`<path class="gate-body${on?' energized':''}" d="${g.bodyPath}"/>`);
+    parts.push(`<text class="gate-label" x="${g.cx - (g.hasBubble?4:0)}" y="${g.cy}" style="font-size:${g.labelText.length>3?9:10.5}px;">${g.labelText}</text>`);
+    if(g.hasBubble) parts.push(`<circle class="gate-bubble${on?' energized':''}" cx="${g.bubbleCx}" cy="${g.cy}" r="${BUBBLE_R}"/>`);
+    rn.children.forEach(drawGates);
+  }
+  drawGates(root);
+
+  /* input switches (toggle pins) — labels sit clear above/below, never touching the wire */
+  vars.forEach(v=>{
+    const p=varPos[v], on = inputVals[v]===1;
+    const knobCx = p.x + (on? (SWITCH_W/2-11) : -(SWITCH_W/2-11));
+    parts.push(`<g class="circ-switch" data-var="${v}" style="cursor:pointer;">
+      <text class="input-var-label" x="${p.x}" y="${p.y-SWITCH_H/2-12}">${v}</text>
+      <rect class="switch-track ${on?'on':''}" x="${p.x-SWITCH_W/2}" y="${p.y-SWITCH_H/2}" width="${SWITCH_W}" height="${SWITCH_H}" rx="13"/>
+      <circle class="switch-knob ${on?'on':''}" cx="${knobCx}" cy="${p.y}" r="9"/>
+      <text class="input-val-label" x="${p.x}" y="${p.y+SWITCH_H/2+16}" style="fill:${on?'var(--emerald)':'var(--muted-dim)'};">${on?1:0}</text>
+    </g>`);
+  });
+
+  /* output LED */
+  parts.push(`<circle class="led-glass" cx="${ledPos.x}" cy="${ledPos.y}" r="19"/>`);
+  parts.push(`<circle class="${rootOn?'led-on':'led-off'}" cx="${ledPos.x}" cy="${ledPos.y}" r="12"/>`);
+  parts.push(`<text class="out-label" x="${ledPos.x}" y="${ledPos.y+38}">OUT</text>`);
+
+  /* responsive: viewBox keeps coordinates fixed, CSS lets it shrink on
+     small screens without ever clipping or overlapping content */
+  const svg = `<svg viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" style="max-width:100%; height:auto; display:block; margin:0 auto;" xmlns="http://www.w3.org/2000/svg">${parts.join("")}</svg>`;
+
+  const wrap=document.getElementById("circuitSvgWrap");
+  wrap.innerHTML = svg;
+  wrap.querySelectorAll(".circ-switch").forEach(g=>{
+    g.addEventListener("click", ()=>{
+      const v=g.dataset.var; circuitState.inputVals[v] = circuitState.inputVals[v]?0:1;
+      renderCircuitSvg();
+    });
+  });
+
+  /* legend of the symbols actually used in this diagram */
+  const kindsUsed=new Set();
+  (function collect(rn){ if(rn.children){ kindsUsed.add(rn.kind); rn.children.forEach(collect); } })(root);
+  const legendNames = { AND:"AND", OR:"OR", NOT:"NOT", NAND:"NAND", NOR:"NOR", XOR:"XOR", XNOR:"XNOR" };
+  let legend = `<div class="circ-legend"><span><i></i>Used gates: ${[...kindsUsed].map(k=>legendNames[k]).join(", ")||"—"}</span><span>🟢 highlighted = energized (output = 1)</span><span>Click a switch to flip an input</span></div>`;
+  let legendHost = document.getElementById("circuitLegend");
+  if(!legendHost){
+    legendHost = document.createElement("div");
+    legendHost.id = "circuitLegend";
+    wrap.parentNode.insertBefore(legendHost, wrap.nextSibling);
+  }
+  legendHost.innerHTML = legend;
+
+  document.getElementById("circuitReadout").textContent = `F(${vars.join(",")}) = ${rootOn?1:0} — inputs: ${vars.map(v=>v+"="+inputVals[v]).join(", ")}`;
+}
+document.getElementById("circGenBtn").addEventListener("click", ()=>{ circuitState.inputVals={}; buildCircuit(document.getElementById("circExprInput").value); });
+window.loadIntoVisualizer = function(exprStr){
+  document.getElementById("circExprInput").value = exprStr;
+  circuitState.inputVals={};
+  goTo("circuit");
+  setTimeout(()=>buildCircuit(exprStr), 50);
+};
+buildCircuit(document.getElementById("circExprInput").value);
+
+
+/* =========================================================
+   MINI PROJECTS
+   ========================================================= */
+const projects = [
+  {name:"Traffic Light Controller", scenario:"A pedestrian-crossing button (P) should force red-for-cars (R) whenever pressed, or whenever a timer (T) has elapsed.", expr:"P + T", note:"R = P + T — either condition alone is enough to trigger red."},
+  {name:"Security Alarm", scenario:"An alarm (Y) should sound if a door sensor (D) is triggered AND the system is armed (S), or if a panic button (B) is pressed regardless of arming.", expr:"D.S + B", note:"Y = D·S + B — the panic button bypasses the arming condition entirely."},
+  {name:"Voting Machine (2-of-3 majority)", scenario:"A 3-judge panel (A, B, C) passes a motion if at least 2 of the 3 vote yes.", expr:"A.B + B.C + A.C", note:"This is the classic 'majority function' — true whenever any two (or all three) inputs are 1."},
+  {name:"Door Lock", scenario:"A door unlocks (U) if a valid keycard (K) is swiped AND the correct PIN (P) is entered, or if a master override (M) is active.", expr:"K.P + M", note:"U = K·P + M — both factors are required for normal entry, unless overridden."},
+  {name:"Elevator Controller", scenario:"An elevator moves (M) if a floor is requested (R) and the doors are closed (C), or if a fire-service override (F) commands it.", expr:"R.C + F", note:"M = R·C + F — normal operation requires closed doors, but fire override bypasses that check."}
+];
+function renderProjects(){
+  document.getElementById("projectsHost").innerHTML = projects.map(p=>`
+    <div class="card"><h3>${p.name}</h3><p>${p.scenario}</p>
+      <div class="formula-chip">${p.expr}</div>
+      <p>${p.note}</p>
+      <div class="btn-row"><button class="btn ghost small" onclick="loadIntoVisualizer('${p.expr.replace(/'/g,"\\'")}')">🔌 View in Circuit Visualizer</button></div>
+    </div>`).join("");
+}
+renderProjects();
+
+/* =========================================================
+   FORMULA SHEET
+   ========================================================= */
+function renderFormulaSheet(){
+  document.getElementById("formulaSheetHost").innerHTML = theorems.map(t=>`
+    <div class="card"><h3>${t.name}</h3>${t.forms.map(([l,r])=>`<div class="formula-chip">${l} = ${r}</div>`).join("")}</div>`).join("");
+}
+renderFormulaSheet();
+document.getElementById("printFormulaBtn").addEventListener("click", ()=>{ goTo("formulasheet"); setTimeout(()=>window.print(), 200); });
+
+/* =========================================================
+   APPLICATIONS
+   ========================================================= */
+const applications = [
+  {name:"Computers", text:"Every arithmetic and logic unit (ALU) operation is a Boolean expression evaluated in silicon."},
+  {name:"Processors", text:"Instruction decoding and control signal generation are built from Boolean control logic."},
+  {name:"Control Systems", text:"Interlocks and safety conditions ('run only if guard closed AND pressure normal') are Boolean expressions."},
+  {name:"Robotics", text:"Sensor-fusion decisions ('turn if obstacle-left OR obstacle-front') are evaluated as Boolean logic in real time."},
+  {name:"Artificial Intelligence", text:"Rule-based systems and decision trees reduce, at their core, to Boolean conditions."},
+  {name:"Communication Systems", text:"Error-detection and parity-check circuits use Boolean XOR-based logic."},
+  {name:"Embedded Systems", text:"Microcontroller GPIO logic and interrupt conditions are expressed and optimized as Boolean functions."},
+  {name:"Digital Electronics", text:"Every combinational and sequential circuit — adders, multiplexers, flip-flops — is designed using these theorems."}
+];
+document.getElementById("applicationsHost").innerHTML = applications.map(a=>`<div class="card"><h3>${a.name}</h3><p>${a.text}</p></div>`).join("");
+
+/* =========================================================
+   FAQ (15)
+   ========================================================= */
+const faqs = [
+  ["What is Boolean Algebra used for?","It's the mathematical foundation for designing and simplifying digital logic circuits."],
+  ["What's the difference between a theorem and a law?","In this context the terms are used interchangeably — both refer to a proven Boolean identity."],
+  ["Why do we need to simplify Boolean expressions?","Simpler expressions usually mean fewer gates, lower cost, less power and less delay in the final circuit."],
+  ["What is a literal?","A variable or its complement as it appears in an expression, e.g. A or A'."],
+  ["What is the difference between AND and OR?","AND requires every input to be 1; OR requires at least one input to be 1."],
+  ["How do you prove a Boolean identity?","By evaluating both sides for every possible input combination (perfect induction) — if they always match, the identity is proven."],
+  ["What does De Morgan's theorem let you do?","Convert between AND/OR forms by pushing complements through, e.g. turning a NOR into an AND of complements."],
+  ["What is the Duality Principle?","Every valid Boolean identity has a 'dual' formed by swapping + with ·, and 0 with 1; the dual is also valid."],
+  ["Why is BC redundant in the Consensus Theorem?","Because whenever B=C=1, either AB or A'C already forces the same output, so BC adds no new cases."],
+  ["Can Absorption remove a gate from a real circuit?","Yes — A+AB=A means the AB branch (an AND gate plus an OR input) can be deleted entirely."],
+  ["What is a truth table?","A table listing a function's output for every possible combination of its input values."],
+  ["What is a logic gate?","A physical device that implements one Boolean operation, such as AND, OR, or NOT."],
+  ["Is 0 the identity for AND or OR?","0 is the identity for OR (A+0=A); 1 is the identity for AND (A·1=A)."],
+  ["What is the Involution Law?","(A')' = A — complementing twice returns the original value."],
+  ["Do these laws work for more than 2 variables?","Yes — the Associative and Distributive laws in particular are what let you extend 2-input reasoning to any number of variables."]
+];
+document.getElementById("faqHost").innerHTML = faqs.map(([q,a])=>`<details class="acc"><summary>${q}</summary><p>${a}</p></details>`).join("");
+
+/* =========================================================
+   GLOSSARY
+   ========================================================= */
+const glossary = [
+  ["AND","A Boolean operator that outputs 1 only if all its inputs are 1."],
+  ["Absorption","The law stating A+AB=A and A(A+B)=A."],
+  ["Associative","The law stating that grouping doesn't matter: (A+B)+C=A+(B+C)."],
+  ["Boolean Variable","A symbol that can hold exactly one of two values, 0 or 1."],
+  ["Circuit","A physical arrangement of logic gates implementing a Boolean function."],
+  ["Commutative","The law stating that operand order doesn't matter: A+B=B+A."],
+  ["Complement","The inverse of a variable: A' is 1 when A is 0, and vice versa."],
+  ["Consensus Theorem","The identity showing that AB+A'C+BC simplifies to AB+A'C."],
+  ["De Morgan's Theorem","The pair of identities relating complements of AND/OR: (A+B)'=A'B', (AB)'=A'+B'."],
+  ["Distributive","The law stating A(B+C)=AB+AC, and its dual A+BC=(A+B)(A+C)."],
+  ["Duality","The principle that swapping + with · and 0 with 1 in a true identity produces another true identity."],
+  ["Gate","A physical/electronic device implementing one Boolean operator."],
+  ["Idempotent","The law stating A+A=A and A·A=A."],
+  ["Identity Law","The law stating A+0=A and A·1=A."],
+  ["Involution","The law stating (A')'=A — double complementation cancels out."],
+  ["Literal","A variable or its complement as it appears in an expression."],
+  ["NAND","NOT-AND — outputs 0 only when all inputs are 1."],
+  ["NOR","NOT-OR — outputs 1 only when all inputs are 0."],
+  ["NOT","A Boolean operator that inverts its single input."],
+  ["Null Law","The law stating A+1=1 and A·0=0."],
+  ["OR","A Boolean operator that outputs 1 if any input is 1."],
+  ["Truth Table","A table listing a function's output for every input combination."]
+];
+document.getElementById("glossaryHost").innerHTML = `<div class="card">${glossary.map(([t,d])=>`<p><strong style="color:var(--text);">${t}</strong> — ${d}</p>`).join("")}</div>`;
+
+/* =========================================================
+   FLASHCARDS
+   ========================================================= */
+let flashDeck = theorems.map(t=>({front:t.name, back:t.forms.map(f=>f[0]+" = "+f[1]).join("  |  ")}));
+flashDeck.push({front:"Literal", back:"A variable or its complement, e.g. A or A'"});
+flashDeck.push({front:"Duality Principle", back:"Swap + ↔ ·, 0 ↔ 1, to get the dual identity"});
+let flashIdx=0;
+function renderFlash(){
+  document.getElementById("flashFront").textContent = flashDeck[flashIdx].front;
+  document.getElementById("flashBack").textContent = flashDeck[flashIdx].back;
+  document.getElementById("flashCard").classList.remove("flipped");
+  document.getElementById("flashCounter").textContent = `Card ${flashIdx+1} of ${flashDeck.length}`;
+}
+document.getElementById("flashCard").addEventListener("click", ()=> document.getElementById("flashCard").classList.toggle("flipped"));
+document.getElementById("flashFlip").addEventListener("click", ()=> document.getElementById("flashCard").classList.toggle("flipped"));
+document.getElementById("flashNext").addEventListener("click", ()=>{ flashIdx=(flashIdx+1)%flashDeck.length; renderFlash(); });
+document.getElementById("flashPrev").addEventListener("click", ()=>{ flashIdx=(flashIdx-1+flashDeck.length)%flashDeck.length; renderFlash(); });
+document.getElementById("flashShuffle").addEventListener("click", ()=>{
+  for(let i=flashDeck.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [flashDeck[i],flashDeck[j]]=[flashDeck[j],flashDeck[i]]; }
+  flashIdx=0; renderFlash(); showToast("Shuffled");
+});
+renderFlash();
+
+/* =========================================================
+   QUIZ (50 questions)
+   ========================================================= */
+const quizBank = [
+  {q:"A + 0 simplifies to:", options:["0","1","A","A'"], a:2},
+  {q:"A . 1 simplifies to:", options:["A","1","0","A'"], a:0},
+  {q:"A + 1 simplifies to:", options:["A","0","1","A'"], a:2},
+  {q:"A . 0 simplifies to:", options:["A","1","0","A'"], a:2},
+  {q:"A + A simplifies to:", options:["1","0","A","2A"], a:2},
+  {q:"A . A simplifies to:", options:["A","1","0","A'"], a:0},
+  {q:"A + A' simplifies to:", options:["0","A","1","A'"], a:2},
+  {q:"A . A' simplifies to:", options:["1","A","0","A'"], a:2},
+  {q:"(A')' simplifies to:", options:["A'","0","1","A"], a:3},
+  {q:"Which law states A+B=B+A?", options:["Associative","Commutative","Distributive","Absorption"], a:1},
+  {q:"Which law states (A+B)+C=A+(B+C)?", options:["Commutative","Distributive","Associative","Absorption"], a:2},
+  {q:"A.(B+C) equals:", options:["AB+C","A+BC","AB+AC","A(B+C)'"], a:2},
+  {q:"A+(B.C) equals:", options:["(A+B).(A+C)","AB+AC","A+B+C","(A+B)(A+C)'"], a:0},
+  {q:"A + A.B simplifies to:", options:["AB","A","B","1"], a:1},
+  {q:"A.(A+B) simplifies to:", options:["A","B","AB","1"], a:0},
+  {q:"(A+B)' equals:", options:["A'+B'","A'.B'","AB","A+B"], a:1},
+  {q:"(A.B)' equals:", options:["A'.B'","AB","A'+B'","A+B"], a:2},
+  {q:"AB+A'C+BC simplifies to:", options:["AB+A'C","BC only","A+B+C","AB.A'C"], a:0},
+  {q:"Which term is redundant in AB+A'C+BC?", options:["AB","A'C","BC","None"], a:2},
+  {q:"The dual of A+0=A is:", options:["A.1=A","A+1=1","A.A=A","A+A'=1"], a:0},
+  {q:"The dual of A+A'=1 is:", options:["A.A=A","A.A'=0","A+A=A","A.1=A"], a:1},
+  {q:"In Duality, + is swapped with:", options:["'","·","0","1"], a:1},
+  {q:"In Duality, 0 is swapped with:", options:["1","A","'","+"], a:0},
+  {q:"An AND gate outputs 1 when:", options:["Any input is 1","All inputs are 1","All inputs are 0","Any input is 0"], a:1},
+  {q:"An OR gate outputs 0 when:", options:["Any input is 1","All inputs are 0","All inputs are 1","Never"], a:1},
+  {q:"A NOT gate with input 1 outputs:", options:["1","0","Undefined","A"], a:1},
+  {q:"A literal is:", options:["A truth table row","A variable or its complement","A logic gate","A circuit diagram"], a:1},
+  {q:"A NAND gate is equivalent to:", options:["AND then NOT","OR then NOT","NOT then AND","NOT then OR"], a:0},
+  {q:"A NOR gate is equivalent to:", options:["AND then NOT","OR then NOT","NOT then OR","NOT then AND"], a:1},
+  {q:"How many rows does a 3-variable truth table have?", options:["4","6","8","16"], a:2},
+  {q:"How many rows does a 2-variable truth table have?", options:["2","4","8","16"], a:1},
+  {q:"The Idempotent Law involves:", options:["Two different variables","A variable and a constant","A variable combined with itself","Complements only"], a:2},
+  {q:"The Complement Law involves:", options:["A variable and its complement","Two constants","Two different variables","A variable and 1 only"], a:0},
+  {q:"Which law lets you regroup three ORed terms freely?", options:["Commutative","Associative","Distributive","Null"], a:1},
+  {q:"Which law lets you swap operand order?", options:["Associative","Commutative","Absorption","Involution"], a:1},
+  {q:"A' + B' is the De Morgan equivalent of:", options:["(A+B)'","A+B","(AB)'","AB"], a:2},
+  {q:"A'.B' is the De Morgan equivalent of:", options:["(AB)'","AB","(A+B)'","A+B"], a:2},
+  {q:"If A=1 and B=0, A.B equals:", options:["1","0","A","B"], a:1},
+  {q:"If A=1 and B=0, A+B equals:", options:["0","1","A'","B'"], a:1},
+  {q:"If A=0, A' equals:", options:["0","A","1","undefined"], a:2},
+  {q:"Proof by perfect induction means:", options:["Guessing the answer","Checking every possible input combination","Using calculus","Using only algebra, no tables"], a:1},
+  {q:"A circuit built from AB+AC instead of A(B+C) uses:", options:["Fewer gates","The same number of gates always","More gates (2 ANDs + 1 OR vs 1 OR + 1 AND)","No gates"], a:2},
+  {q:"Which law is the basis for removing a redundant OR term covered by a smaller term?", options:["Absorption","Null","Identity","Commutative"], a:0},
+  {q:"0 is the identity element for:", options:["AND","OR","NOT","XOR only"], a:1},
+  {q:"1 is the identity element for:", options:["OR","NOT","AND","None"], a:2},
+  {q:"A+1 always equals:", options:["A","0","1","A'"], a:2},
+  {q:"A.0 always equals:", options:["A","1","0","A'"], a:2},
+  {q:"The majority function for a 3-judge vote uses which structure?", options:["AB+BC+AC","A+B+C only","A.B.C only","A'B'C'"], a:0},
+  {q:"A door-lock circuit U=K.P+M lets the door unlock if:", options:["Only K and P are both true","Only M is true","Either (K and P) or M is true","Never"], a:2},
+  {q:"An elevator circuit M=R.C+F moves the elevator if:", options:["R and C are both true, or F is true","Only F is false","R alone is enough","None of the above"], a:0}
+];
+function shuffle(arr){ const a=arr.slice(); for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; } return a; }
+let quizOrder = shuffle(quizBank.map((_,i)=>i));
+let quizIdx=0, quizScore=0, quizAnsweredThis=false;
+
+function renderQuizQuestion(){
+  quizAnsweredThis=false;
+  const q = quizBank[quizOrder[quizIdx]];
+  document.getElementById("quizPos").textContent = `Question ${quizIdx+1} of ${quizOrder.length}`;
+  document.getElementById("quizProgressFill").style.width = (quizIdx/quizOrder.length*100)+"%";
+  const area=document.getElementById("quizArea");
+  area.innerHTML = `<div class="quiz-prompt">${q.q}</div><div class="options">${q.options.map((o,i)=>`<button class="opt" data-idx="${i}">${o}</button>`).join("")}</div><div class="feedback" id="quizFeedback"></div><div class="quiz-actions"><button class="btn next" id="quizNextBtn" style="display:none;">Next question →</button></div>`;
+  const feedback=document.getElementById("quizFeedback"), nextBtn=document.getElementById("quizNextBtn");
+  area.querySelectorAll(".opt").forEach(btn=>btn.addEventListener("click", ()=>{
+    if(quizAnsweredThis) return; quizAnsweredThis=true;
+    const idx=parseInt(btn.dataset.idx,10);
+    area.querySelectorAll(".opt").forEach(b=>b.disabled=true);
+    const correct = idx===q.a; quizScore += correct?1:0;
+    btn.classList.add(correct?"correct":"wrong");
+    if(!correct) area.querySelectorAll(".opt")[q.a].classList.add("correct");
+    document.getElementById("quizScore").textContent=quizScore; document.getElementById("quizTotal").textContent=quizIdx+1;
+    feedback.textContent = correct ? "Correct!" : `Not quite — correct answer: ${q.options[q.a]}`;
+    feedback.className = "feedback "+(correct?"good":"bad");
+    nextBtn.style.display="inline-flex";
+  }));
+  nextBtn.addEventListener("click", ()=>{ quizIdx++; if(quizIdx>=quizOrder.length){ renderQuizComplete(); } else renderQuizQuestion(); });
+}
+function renderQuizComplete(){
+  document.getElementById("quizPos").textContent="Complete";
+  document.getElementById("quizProgressFill").style.width="100%";
+  const pct=Math.round(quizScore/quizOrder.length*100);
+  let html = `<div class="quiz-prompt">Final score: <strong style="color:var(--emerald);">${quizScore} / ${quizOrder.length}</strong> (${pct}%)</div>`;
+  if(pct>=80){
+    html += `<div class="certificate" style="margin-top:16px;"><h2>Certificate of Achievement</h2><p>This certifies that</p><input class="expr-input" id="certName" placeholder="Type your name" style="max-width:280px; margin:10px auto; text-align:center;"><p>has scored ${pct}% on the Boolean Theorems Quiz.</p><p class="mono" style="color:var(--muted-dim);">${new Date().toLocaleDateString()}</p></div>
+      <div class="quiz-actions"><button class="btn ghost" id="printCertBtn">🖨 Print Certificate</button></div>`;
+  } else {
+    html += `<p>Score 80% or higher to unlock a certificate — review the Boolean Theorems page and try again.</p>`;
+  }
+  html += `<div class="quiz-actions"><button class="btn next" id="quizRestartBtn">↺ Restart quiz</button></div>`;
+  document.getElementById("quizArea").innerHTML = html;
+  const printCertBtn=document.getElementById("printCertBtn");
+  if(printCertBtn) printCertBtn.addEventListener("click", ()=> window.print());
+  document.getElementById("quizRestartBtn").addEventListener("click", ()=>{
+    quizOrder=shuffle(quizBank.map((_,i)=>i)); quizIdx=0; quizScore=0;
+    document.getElementById("quizScore").textContent="0"; renderQuizQuestion(); showToast("Quiz restarted");
+  });
+}
+renderQuizQuestion();
+
+triggerReveals();
+})();
+</script>
+</body>
+</html>
